@@ -2,362 +2,253 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Eurojackpot Helper</title>
-
 <style>
-:root{
-  --bg:#0f1220; --panel:#171a2a; --muted:#9aa3b2; --text:#e9edf5; --accent:#5f8cff; --ok:#3ddc97;
-  --border:#23263a;
-}
-*{box-sizing:border-box}
-body{margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text);}
-.app{max-width:980px; margin:24px auto; padding:0 16px;}
-header{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px}
-h1{margin:0 0 6px}
-.note{color:var(--muted); margin:0 0 8px}
-section{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin:16px 0}
+body{background:#0f1220;color:#fff;font-family:Arial, sans-serif;margin:0}
+.app{max-width:960px;margin:20px auto;padding:10px}
+header,section{background:#171a2a;border-radius:8px;padding:15px;margin-bottom:20px}
+h1,h2{margin-top:0}
+input,select,button{padding:8px;margin:5px 0;border-radius:5px;border:1px solid #333;font-size:14px}
+button{background:#5f8cff;color:#fff;border:none;cursor:pointer}
+button:disabled{opacity:0.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.card{background:#14182b;padding:10px;margin:5px 0;border-radius:5px}
+.badge{display:inline-block;padding:3px 6px;background:#2d2d4d;border-radius:4px;margin-left:5px;font-size:12px}
+.banner{margin-top:8px;padding:8px;border-radius:5px}
+.banner.ok{background:#1c2b24;color:#aef5cf}
+.banner.warn{background:#2a2131;color:#ffd5e5}
 .hidden{display:none}
-input,select,button{font:inherit}
-input,select{background:#0f1326; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:10px}
-button{background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 14px; cursor:pointer}
-button:disabled{opacity:.6; cursor:not-allowed}
-button.ghost{background:transparent; border:1px solid var(--border); color:#cfe0ff}
-.row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-.banner{margin-top:8px; padding:10px; border-radius:8px; background:#2a2131; border:1px solid #5d254f; color:#ffd5e5}
-.banner.ok{background:#1c2b24; border-color:#2f6b4e; color:#c1f1db}
-.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
-.tab{background:#1a1f35; border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:8px; cursor:pointer}
-.tab.active{background:#24305a; border-color:#2f3b72}
-.tabpanel{margin-top:6px}
-.tabpanel.hidden{display:none}
-.card{border:1px solid var(--border); border-radius:10px; padding:10px; margin:10px 0; background:#14182b}
-.badge{display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#1a1f35; color:#dfe6ff; margin-left:6px}
-.badge.ok{background:#11261d; color:#bdf7d2; border-color:#1b4b37}
-.nums{font-variant-numeric: tabular-nums}
-fieldset{border:1px solid #24305a; border-radius:8px; padding:8px}
-legend{color:#dfe6ff; font-size:0.9em}
-.year-list label{display:inline-flex; gap:6px; align-items:center; background:#10152a; border:1px solid var(--border); padding:6px 10px; border-radius:999px; margin:4px}
-.btnrow{display:flex; gap:10px; margin-bottom:10px}
 </style>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="app">
-  <header>
-    <h1>🎯 Eurojackpot Helper</h1>
-    <p class="note">Lokal im Browser. Lade dein Excel-Archiv (.xls/.xlsx). Cut-off: Di/Fr 22:00 Uhr.</p>
-    <div class="row">
-      <input type="file" id="fileInput" accept=".xls,.xlsx" />
-      <button id="btnReload" class="ghost">Neu laden</button>
-    </div>
-    <div id="freshnessBanner" class="banner hidden"></div>
-    <div id="archiveInfo" class="note">Noch kein Archiv geladen.</div>
-  </header>
+<header>
+<h1>🎯 Eurojackpot Helper</h1>
+<p>Archiv (.xls/.xlsx) hochladen – alles passiert lokal im Browser.</p>
+<div class="row">
+<input type="file" id="fileInput" accept=".xls,.xlsx" />
+</div>
+<div id="freshnessBanner" class="banner hidden"></div>
+<div id="archiveInfo">Noch kein Archiv geladen.</div>
+</header>
 
-  <section>
-    <h2>Modus wählen</h2>
-    <div class="tabs">
-      <button class="tab active" data-tab="never">Noch nie gesehen</button>
-      <button class="tab" data-tab="pairs">Häufige Paare</button>
-      <button class="tab" data-tab="top">Wahrscheinlichster Schein</button>
-    </div>
+<section>
+<h2>Modus wählen</h2>
+<div class="row">
+<button onclick="showTab('never')">Noch nie gesehen</button>
+<button onclick="showTab('pairs')">Häufige Paare</button>
+<button onclick="showTab('top')">Wahrscheinlichster Schein</button>
+</div>
 
-    <div class="tabpanel" id="tab-never">
-      <div class="row">
-        <label>Felder:
-          <input type="number" id="neverCount" min="1" max="20" value="6">
-        </label>
-      </div>
-      <button id="btnNever">✨ Generieren</button>
-    </div>
+<div id="tab-never">
+<label>Felder: <input type="number" id="neverCount" value="6" min="1" max="20"></label>
+<button onclick="genNever()">Generieren</button>
+</div>
 
-    <div class="tabpanel hidden" id="tab-pairs">
-      <div class="row">
-        <label>Erzwinge ≥ k Paare:
-          <select id="pairsK">
-            <option value="2" selected>2 Paare</option>
-            <option value="3">3 Paare</option>
-            <option value="4">4 Paare</option>
-          </select>
-        </label>
-        <label>Top-N Paare (Quelle):
-          <select id="pairsTopN">
-            <option>25</option><option selected>50</option><option>100</option>
-          </select>
-        </label>
-        <label>Felder:
-          <input type="number" id="pairsCount" min="1" max="20" value="6">
-        </label>
-      </div>
-      <fieldset>
-        <legend>Jahre filtern (optional):</legend>
-        <label><input type="checkbox" id="pairsAllYears" checked> Alle Jahre</label>
-        <div id="pairsYearList" class="year-list"></div>
-      </fieldset>
-      <button id="btnPairs">🧩 Generieren</button>
-    </div>
+<div id="tab-pairs" class="hidden">
+<label>Paare: 
+<select id="pairsK">
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select></label>
+<label>Top-N Paare:
+<select id="pairsTopN">
+<option>25</option>
+<option selected>50</option>
+<option>100</option>
+</select></label>
+<label>Felder: <input type="number" id="pairsCount" value="6" min="1" max="20"></label>
+<button onclick="genPairs()">Generieren</button>
+</div>
 
-    <div class="tabpanel hidden" id="tab-top">
-      <div class="row">
-        <label>Anzahl Felder:
-          <input type="number" id="topCount" min="1" max="20" value="10">
-        </label>
-      </div>
-      <fieldset>
-        <legend>Jahre filtern (optional):</legend>
-        <label><input type="checkbox" id="topAllYears" checked> Alle Jahre</label>
-        <div id="topYearList" class="year-list"></div>
-      </fieldset>
-      <button id="btnTop">⭐ Generieren</button>
-      <p class="note">Hinweis: rechnerische Empfehlung – keine Gewinn-Garantie.</p>
-    </div>
-  </section>
+<div id="tab-top" class="hidden">
+<label>Felder: <input type="number" id="topCount" value="10" min="1" max="20"></label>
+<button onclick="genTop()">Generieren</button>
+</div>
+</section>
 
-  <section>
-    <h2>Ergebnisse</h2>
-    <div class="btnrow">
-      <button id="btnExportCSV" class="ghost" disabled>⬇️ Export (CSV)</button>
-      <button id="btnExportXLSX" class="ghost" disabled>⬇️ Export (Excel)</button>
-    </div>
-    <div id="results"></div>
-  </section>
+<section>
+<h2>Ergebnisse</h2>
+<div id="results"></div>
+<button id="btnExportXLSX" onclick="exportXLSX()" disabled>Export XLSX</button>
+</section>
 </div>
 
 <script>
-const DRAW_CUTOFF_H = 22, DRAW_CUTOFF_M = 0;
-let ARCHIVE = [], SEEN = new Set(), MAIN_FREQ = Array(51).fill(0), EURO_FREQ = Array(13).fill(0), LAST_EXPORT = null;
+const DRAW_CUTOFF_H=22,DRAW_CUTOFF_M=0;
+let ARCHIVE=[],SEEN=new Set(),MAIN_FREQ=Array(51).fill(0),EURO_FREQ=Array(13).fill(0),LAST_EXPORT=null;
 
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('tab-'+btn.dataset.tab).classList.remove('hidden');
-  });
-});
-
-document.getElementById('btnReload').addEventListener('click', ()=> location.reload());
+function showTab(name){
+document.querySelectorAll('[id^=tab-]').forEach(el=>el.classList.add('hidden'));
+document.getElementById('tab-'+name).classList.remove('hidden');
+}
 
 document.getElementById('fileInput').addEventListener('change', async e=>{
-  const f = e.target.files[0]; if(!f) return;
-  try{
-    const data = await f.arrayBuffer();
-    const wb = XLSX.read(data, { type:'array' });
-    let rows = [];
-    wb.SheetNames.forEach(sn=>{
-      const sheet = wb.Sheets[sn];
-      if(!sheet) return;
-      rows.push(...XLSX.utils.sheet_to_json(sheet, { defval:"" }));
-    });
-    ARCHIVE = normalizeRows(rows).sort((a,b)=>a.date-b.date);
-    if(!ARCHIVE.length) return alert('Keine Ziehungen erkannt.');
-    buildIndexes();
-    fillYearLists();
-    showFreshnessBanner();
-    document.getElementById('archiveInfo').textContent = `Archiv geladen: ${ARCHIVE.length} Ziehungen.`;
-    document.getElementById('results').innerHTML='';
-    LAST_EXPORT = null; toggleExport(false);
-  }catch(err){
-    console.error(err);
-    alert('Fehler beim Einlesen: '+(err.message||err));
-  }
+const f=e.target.files[0]; if(!f) return;
+const data=await f.arrayBuffer();
+const wb=XLSX.read(data,{type:'array'});
+let rows=[];
+wb.SheetNames.forEach(sn=>{
+rows.push(...XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:""}));
+});
+ARCHIVE=normalizeRows(rows).sort((a,b)=>a.date-b.date);
+if(!ARCHIVE.length){alert('Keine Ziehungen erkannt.');return;}
+buildIndexes();
+showFreshnessBanner();
+document.getElementById('archiveInfo').textContent=`${ARCHIVE.length} Ziehungen geladen.`;
+document.getElementById('results').innerHTML='';
+LAST_EXPORT=null; toggleExport(false);
 });
 
 function normalizeRows(rows){
-  const out = [];
-  const cols = Object.keys(rows[0]||{}).map(c=>String(c).trim());
-  const low = cols.map(c=>c.toLowerCase());
-  const findCol = (cands)=>{
-    for(const c of cands){
-      const i = low.indexOf(String(c).toLowerCase());
-      if(i>=0) return cols[i];
-    }
-    for(const c of cands){
-      const i = low.findIndex(x=> x.includes(String(c).toLowerCase()));
-      if(i>=0) return cols[i];
-    }
-    return null;
-  };
-  const colDate = findCol(['Datum','Date','Ziehungsdatum']);
-  const mainCols = [findCol(['Zahl 1','N1']), findCol(['Zahl 2','N2']), findCol(['Zahl 3','N3']), findCol(['Zahl 4','N4']), findCol(['Zahl 5','N5'])];
-  const euroCols = [findCol(['Eurozahl 1','E1']), findCol(['Eurozahl 2','E2'])];
-  for(const r of rows){
-    const dt = parseDateLoose(r[colDate]); if(!dt) continue;
-    const main = mainCols.map(c=> parseInt(r[c],10)).filter(Number.isInteger);
-    const euro = euroCols.map(c=> parseInt(r[c],10)).filter(Number.isInteger);
-    if(main.length===5 && euro.length===2){
-      main.sort((a,b)=>a-b); euro.sort((a,b)=>a-b);
-      out.push({date: dt, main, euro});
-    }
-  }
-  return out;
+const out=[];
+const cols=Object.keys(rows[0]||{}).map(c=>String(c).trim());
+const low=cols.map(c=>c.toLowerCase());
+const findCol=(cands)=>{
+for(const c of cands){
+let i=low.indexOf(String(c).toLowerCase());
+if(i>=0) return cols[i];
+}
+for(const c of cands){
+let i=low.findIndex(x=>x.includes(String(c).toLowerCase()));
+if(i>=0) return cols[i];
+}
+return null;
+};
+const colDate=findCol(['Datum','Date','Ziehungsdatum']);
+const mainCols=[findCol(['Zahl 1']),findCol(['Zahl 2']),findCol(['Zahl 3']),findCol(['Zahl 4']),findCol(['Zahl 5'])];
+const euroCols=[findCol(['Eurozahl 1']),findCol(['Eurozahl 2'])];
+for(const r of rows){
+const dt=parseDateLoose(r[colDate]); if(!dt) continue;
+const main=mainCols.map(c=>parseInt(r[c],10)).filter(Number.isInteger);
+const euro=euroCols.map(c=>parseInt(r[c],10)).filter(Number.isInteger);
+if(main.length===5 && euro.length===2){
+main.sort((a,b)=>a-b); euro.sort((a,b)=>a-b);
+out.push({date:dt,main,euro});
+}
+}
+return out;
 }
 
 function parseDateLoose(v){
-  const s = String(v??'').trim(); if(!s) return null;
-  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s);
-  if(/^\d{2}\.\d{2}\.\d{4}/.test(s)){ const [d,m,y]=s.split('.').map(Number); return new Date(y,m-1,d); }
-  const t = Date.parse(s); return Number.isNaN(t)?null:new Date(t);
+const s=String(v??'').trim(); if(!s) return null;
+if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s);
+if(/^\d{2}\.\d{2}\.\d{4}/.test(s)){const [d,m,y]=s.split('.').map(Number);return new Date(y,m-1,d);}
+const t=Date.parse(s); return Number.isNaN(t)?null:new Date(t);
 }
 
 function showFreshnessBanner(){
-  const b = document.getElementById('freshnessBanner');
-  if(!ARCHIVE.length){ b.classList.add('hidden'); return; }
-  const latest = ARCHIVE[ARCHIVE.length-1].date;
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const cutoff = new Date(today); cutoff.setHours(DRAW_CUTOFF_H, DRAW_CUTOFF_M, 0, 0);
-  const wd = today.getDay();
-  const isDrawDay = (wd===2 || wd===5);
-  if(isDrawDay && now < cutoff){
-    b.textContent = `ℹ️ Heute ist Ziehungstag – vor ${DRAW_CUTOFF_H}:00 keine Aktualisierung erwartet. Letzte im Archiv: ${latest.toLocaleDateString('de-DE')}.`;
-    b.className = 'banner ok';
-  }else if(latest < today){
-    b.textContent = `⚠️ Letzte Ziehung im Archiv: ${latest.toLocaleDateString('de-DE')}. Bitte aktuelles Archiv hochladen.`;
-    b.className = 'banner';
-  }else{
-    b.textContent = `✅ Archiv aktuell bis ${latest.toLocaleDateString('de-DE')}.`;
-    b.className = 'banner ok';
-  }
-  b.classList.remove('hidden');
+const b=document.getElementById('freshnessBanner');
+if(!ARCHIVE.length){b.classList.add('hidden');return;}
+const latest=ARCHIVE[ARCHIVE.length-1].date;
+const now=new Date();
+const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+const cutoff=new Date(today);cutoff.setHours(DRAW_CUTOFF_H,DRAW_CUTOFF_M,0,0);
+const wd=today.getDay();
+const isDrawDay=(wd===2||wd===5);
+if(isDrawDay && now<cutoff){
+b.textContent=`Heute ist Ziehungstag – vor ${DRAW_CUTOFF_H}:00 keine Aktualisierung erwartet. Letzte im Archiv: ${latest.toLocaleDateString('de-DE')}.`;
+b.className='banner ok';
+}else if(latest<today){
+b.textContent=`Letzte Ziehung im Archiv: ${latest.toLocaleDateString('de-DE')}. Bitte aktuelles Archiv hochladen.`;
+b.className='banner warn';
+}else{
+b.textContent=`Archiv aktuell bis ${latest.toLocaleDateString('de-DE')}.`;
+b.className='banner ok';
+}
+b.classList.remove('hidden');
 }
 
 function buildIndexes(){
-  SEEN.clear(); MAIN_FREQ.fill(0); EURO_FREQ.fill(0);
-  for(const rec of ARCHIVE){
-    SEEN.add(keyCombo(rec.main,rec.euro));
-    rec.main.forEach(n=> MAIN_FREQ[n]++);
-    rec.euro.forEach(n=> EURO_FREQ[n]++);
-  }
+SEEN.clear();MAIN_FREQ.fill(0);EURO_FREQ.fill(0);
+for(const rec of ARCHIVE){
+SEEN.add(keyCombo(rec.main,rec.euro));
+rec.main.forEach(n=>MAIN_FREQ[n]++);
+rec.euro.forEach(n=>EURO_FREQ[n]++);
+}
 }
 
-function fillYearLists(){
-  const years = Array.from(new Set(ARCHIVE.map(x=>x.date.getFullYear()))).sort((a,b)=>a-b);
-  const pairs = document.getElementById('pairsYearList'); pairs.innerHTML='';
-  const top = document.getElementById('topYearList'); top.innerHTML='';
-  years.forEach(y=>{
-    pairs.insertAdjacentHTML('beforeend', `<label><input type="checkbox" value="${y}" checked> ${y}</label>`);
-    top.insertAdjacentHTML('beforeend', `<label><input type="checkbox" value="${y}" checked> ${y}</label>`);
-  });
-}
-
-function keyCombo(m,e){ return m.join('-')+'|'+e.join('-'); }
-function toggleExport(on){
-  document.getElementById('btnExportCSV').disabled = !on;
-  document.getElementById('btnExportXLSX').disabled = !on;
-}
-
+function keyCombo(m,e){return m.join('-')+'|'+e.join('-');}
+function toggleExport(on){document.getElementById('btnExportXLSX').disabled=!on;}
 function pickUniqueNums(n,min,max){
-  const nums=[]; while(nums.length<n){
-    const r = Math.floor(Math.random()*(max-min+1))+min;
-    if(!nums.includes(r)) nums.push(r);
-  }
-  return nums;
-}
-
-function getSelectedYears(listId,allId){
-  if(document.getElementById(allId).checked) return new Set(ARCHIVE.map(r=>r.date.getFullYear()));
-  return new Set(Array.from(document.getElementById(listId).querySelectorAll('input:checked')).map(cb=>parseInt(cb.value,10)));
+const nums=[];while(nums.length<n){const r=Math.floor(Math.random()*(max-min+1))+min;if(!nums.includes(r)) nums.push(r);}
+return nums;
 }
 
 function showResults(arr,title,withScore=false){
-  const r = document.getElementById('results');
-  r.innerHTML='';
-  LAST_EXPORT = arr.map(o=>({main:o.main.join(','), euro:o.euro.join(','), score:o.score||''}));
-  toggleExport(true);
-  arr.forEach(o=>{
-    const card=document.createElement('div'); card.className='card';
-    card.innerHTML=`<b>${title}</b><br>Main: <span class="nums">${o.main.join(' ')}</span> <span class="badge">Euro: <span class="nums">${o.euro.join(' ')}</span></span>`+(withScore?`<span class="badge ok">${o.score} Punkte</span>`:'');
-    r.appendChild(card);
-  });
+const r=document.getElementById('results'); r.innerHTML='';
+LAST_EXPORT=arr.map(o=>({main:o.main.join(','),euro:o.euro.join(','),score:o.score||''}));
+toggleExport(true);
+arr.forEach(o=>{
+const card=document.createElement('div'); card.className='card';
+card.innerHTML=`<b>${title}</b><br>Main: ${o.main.join(' ')} <span class="badge">Euro: ${o.euro.join(' ')}</span>`+(withScore?`<span class="badge">${o.score} Punkte</span>`:'');
+r.appendChild(card);
+});
 }
 
-/* Noch nie gesehen */
-document.getElementById('btnNever').addEventListener('click', ()=>{
-  if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');
-  const count = parseInt(document.getElementById('neverCount').value,10);
-  const res = [];
-  while(res.length<count){
-    const main = pickUniqueNums(5,1,50);
-    const euro = pickUniqueNums(2,1,12);
-    if(!SEEN.has(keyCombo(main,euro))){
-      res.push({main,euro});
-    }
-  }
-  showResults(res,'Noch nie gesehen');
-});
+function genNever(){
+if(!ARCHIVE.length) return alert('Bitte Archiv laden.');
+const count=parseInt(document.getElementById('neverCount').value,10);
+const res=[];
+while(res.length<count){
+const main=pickUniqueNums(5,1,50);
+const euro=pickUniqueNums(2,1,12);
+if(!SEEN.has(keyCombo(main,euro))) res.push({main,euro});
+}
+showResults(res,'Noch nie gesehen');
+}
 
-/* Häufige Paare */
-document.getElementById('btnPairs').addEventListener('click', ()=>{
-  if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');
-  const k = parseInt(document.getElementById('pairsK').value,10);
-  const topN = parseInt(document.getElementById('pairsTopN').value,10);
-  const count = parseInt(document.getElementById('pairsCount').value,10);
-  const years = getSelectedYears('pairsYearList','pairsAllYears');
-  const subset = ARCHIVE.filter(r=> years.has(r.date.getFullYear()));
-  const pairCounts = new Map();
-  for(const rec of subset){
-    const nums = rec.main;
-    for(let i=0;i<nums.length;i++){
-      for(let j=i+1;j<nums.length;j++){
-        const key = nums[i]+'-'+nums[j];
-        pairCounts.set(key, (pairCounts.get(key)||0)+1);
-      }
-    }
-  }
-  const topPairs = Array.from(pairCounts.entries()).sort((a,b)=>b[1]-a[1]).slice(0,topN).map(e=>e[0].split('-').map(Number));
-  const res=[];
-  while(res.length<count){
-    const main = pickUniqueNums(5,1,50);
-    const matchPairs = topPairs.filter(p=> main.includes(p[0]) && main.includes(p[1]));
-    if(matchPairs.length>=k) res.push({main:main.sort((a,b)=>a-b), euro:pickUniqueNums(2,1,12)});
-  }
-  showResults(res,`Häufige Paare ≥${k} (Top ${topN})`);
-});
+function genPairs(){
+if(!ARCHIVE.length) return alert('Bitte Archiv laden.');
+const k=parseInt(document.getElementById('pairsK').value,10);
+const topN=parseInt(document.getElementById('pairsTopN').value,10);
+const count=parseInt(document.getElementById('pairsCount').value,10);
+const pairCounts=new Map();
+for(const rec of ARCHIVE){
+const nums=rec.main;
+for(let i=0;i<nums.length;i++){
+for(let j=i+1;j<nums.length;j++){
+const key=nums[i]+'-'+nums[j];
+pairCounts.set(key,(pairCounts.get(key)||0)+1);
+}
+}
+}
+const topPairs=Array.from(pairCounts.entries()).sort((a,b)=>b[1]-a[1]).slice(0,topN).map(e=>e[0].split('-').map(Number));
+const res=[];
+while(res.length<count){
+const main=pickUniqueNums(5,1,50);
+const matchPairs=topPairs.filter(p=>main.includes(p[0]) && main.includes(p[1]));
+if(matchPairs.length>=k) res.push({main:main.sort((a,b)=>a-b),euro:pickUniqueNums(2,1,12)});
+}
+showResults(res,`Häufige Paare ≥${k} (Top ${topN})`);
+}
 
-/* Wahrscheinlichster Schein */
-document.getElementById('btnTop').addEventListener('click', ()=>{
-  if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');
-  const count = parseInt(document.getElementById('topCount').value,10);
-  const years = getSelectedYears('topYearList','topAllYears');
-  const subset = ARCHIVE.filter(r=> years.has(r.date.getFullYear()));
-  const freqMain = Array(51).fill(0), freqEuro = Array(13).fill(0);
-  for(const rec of subset){
-    rec.main.forEach(n=> freqMain[n]++);
-    rec.euro.forEach(n=> freqEuro[n]++);
-  }
-  const scored=[];
-  for(let a=1;a<=50;a++) for(let b=a+1;b<=50;b++) for(let c=b+1;c<=50;c++) for(let d=c+1;d<=50;d++) for(let e=d+1;e<=50;e++){
-    const main=[a,b,c,d,e];
-    const euro=pickUniqueNums(2,1,12);
-    const score= main.reduce((s,n)=>s+freqMain[n],0)+ euro.reduce((s,n)=>s+freqEuro[n],0);
-    scored.push({main,euro,score});
-    if(scored.length>5000) break;
-  }
-  scored.sort((x,y)=>y.score-x.score);
-  showResults(scored.slice(0,count),'Wahrscheinlichster Schein',true);
-});
+function genTop(){
+if(!ARCHIVE.length) return alert('Bitte Archiv laden.');
+const count=parseInt(document.getElementById('topCount').value,10);
+const freqMain=[...MAIN_FREQ],freqEuro=[...EURO_FREQ];
+const scored=[];
+for(let a=1;a<=50;a++) for(let b=a+1;b<=50;b++) for(let c=b+1;c<=50;c++) for(let d=c+1;d<=50;d++) for(let e=d+1;e<=50;e++){
+const main=[a,b,c,d,e];
+const euro=pickUniqueNums(2,1,12);
+const score=main.reduce((s,n)=>s+freqMain[n],0)+euro.reduce((s,n)=>s+freqEuro[n],0);
+scored.push({main,euro,score});
+if(scored.length>5000) break;
+}
+scored.sort((x,y)=>y.score-x.score);
+showResults(scored.slice(0,count),'Wahrscheinlichster Schein',true);
+}
 
-/* Export */
-document.getElementById('btnExportCSV').addEventListener('click', ()=>{
-  if(!LAST_EXPORT) return;
-  const rows=[Object.keys(LAST_EXPORT[0])].concat(LAST_EXPORT.map(o=>Object.values(o)));
-  const csv=rows.map(r=>r.join(';')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='ergebnisse.csv';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-document.getElementById('btnExportXLSX').addEventListener('click', ()=>{
-  if(!LAST_EXPORT) return;
-  const ws=XLSX.utils.json_to_sheet(LAST_EXPORT);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse');
-  XLSX.writeFile(wb,'ergebnisse.xlsx');
-});
+function exportXLSX(){
+if(!LAST_EXPORT) return;
+const ws=XLSX.utils.json_to_sheet(LAST_EXPORT);
+const wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse');
+XLSX.writeFile(wb,'ergebnisse.xlsx');
+}
 </script>
 </body>
 </html>
