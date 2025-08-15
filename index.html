@@ -44,7 +44,7 @@ legend{color:#dfe6ff;font-size:.95em}
     <p class="muted">Lokal im Browser. Lade dein Excel-Archiv (.xls/.xlsx). Cut-off: Di/Fr 22:00 Uhr.</p>
     <div class="row">
       <input type="file" id="fileInput" accept=".xls,.xlsx" />
-      <button id="btnReload" class="ghost" title="Gespeichertes Archiv entfernen & Seite neu laden">Neu laden</button>
+      <button id="btnReload" class="ghost">Neu laden</button>
     </div>
     <div id="freshness" class="banner hidden"></div>
     <div id="archInfo" class="muted">Noch kein Archiv geladen.</div>
@@ -137,7 +137,7 @@ legend{color:#dfe6ff;font-size:.95em}
         <div id="goatYears" class="year-list"></div>
       </fieldset>
       <button id="btnGoat">🐐 GOAT-Felder erzeugen</button>
-      <p class="small">Ensemble-Score aus Häufigkeit, Recency, Paare/Tripel, Gaps, Parität, Low/High-Balance, Streuung, Euro-Frequenzen und „Seen“-Penalty.</p>
+      <p class="small">Ensemble-Score aus Häufigkeit, Recency, Paar/Tripel, Gaps, Parität, Low/High-Balance, Streuung, Euro-Frequenzen und „Seen“-Penalty.</p>
     </div>
   </section>
 
@@ -152,13 +152,11 @@ legend{color:#dfe6ff;font-size:.95em}
 </div>
 
 <script>
-/* ====== Global + Persistenz ====== */
-const STORAGE_KEY='EJ_ARCHIVE_V1';
+/* ====== Global ====== */
 const DRAW_CUTOFF_H=22,DRAW_CUTOFF_M=0;
 let ARCH=[], SEEN=new Set(), MAIN=Array(51).fill(0), EURO=Array(13).fill(0);
-let YEARS=[], EXPORT_ROWS=null, EXPORT_TITLE='';
+let YEARS=[], LAST_EXPORT=null;
 
-/* Tabs */
 document.querySelectorAll('.tab').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -168,23 +166,9 @@ document.querySelectorAll('.tab').forEach(b=>{
   });
 });
 
-/* Persistentes Laden beim Start */
-window.addEventListener('load', ()=>{
-  const raw=localStorage.getItem(STORAGE_KEY);
-  if(!raw) return;
-  try{
-    const obj=JSON.parse(raw);
-    if(Array.isArray(obj.rows)){
-      ARCH=obj.rows.map(r=>({date:new Date(r.d), main:r.m, euro:r.e})).sort((a,b)=>a.date-b.date);
-      indexStats(); buildYears(); freshness();
-      document.getElementById('archInfo').textContent=`(aus Speicher) Zeitraum: ${fmtD(ARCH[0].date)} – ${fmtD(ARCH[ARCH.length-1].date)} • ${ARCH.length} Ziehungen`;
-    }
-  }catch(_){}
-});
+document.getElementById('btnReload').onclick=()=>location.reload();
 
-/* Upload & Parsing */
-document.getElementById('btnReload').onclick=()=>{ localStorage.removeItem(STORAGE_KEY); location.reload(); };
-
+/* ====== Upload & Parsing (passt zu deinem XLS) ====== */
 document.getElementById('fileInput').addEventListener('change', async e=>{
   const f=e.target.files[0]; if(!f) return;
   try{
@@ -192,17 +176,13 @@ document.getElementById('fileInput').addEventListener('change', async e=>{
     const wb=XLSX.read(data,{type:'array'});
     const rows=[]; wb.SheetNames.forEach(sn=>rows.push(...XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:""})));
     ARCH = normalize(rows).sort((a,b)=>a.date-b.date);
-    if(!ARCH.length){ alert('Keine Ziehungen erkannt. Erwartet: „Datum“, „5 aus 50“, „EZ“ (oder Nachbarspalten).'); return; }
+    if(!ARCH.length){ alert('Keine Ziehungen erkannt. Erwartet: Spalten „Datum“, „5 aus 50“, „EZ“ (oder Nachbarspalten).'); return; }
     indexStats(); buildYears(); freshness();
     document.getElementById('archInfo').textContent=`Zeitraum: ${fmtD(ARCH[0].date)} – ${fmtD(ARCH[ARCH.length-1].date)} • ${ARCH.length} Ziehungen`;
-    // Persistieren (nur die nötigen Daten)
-    const toStore={rows:ARCH.map(r=>({d:r.date.toISOString(), m:r.main, e:r.euro}))};
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
-    clearResults();
+    document.getElementById('results').innerHTML=''; LAST_EXPORT=null; setExport(false);
   }catch(err){ alert('Fehler beim Einlesen: '+(err.message||err)); }
 });
 
-/* Normalisierung passend zu „Datum | 5 aus 50 | EZ“ (+ Nachbarspalten-Fallback) */
 function normalize(rows){
   const out=[];
   const cols=Object.keys(rows[0]||{}).map(c=>String(c).trim());
@@ -236,7 +216,7 @@ function splitNums(cell){return String(cell??'').replace(/[^\d]+/g,' ').trim().s
 function firstInt(v){const m=String(v??'').match(/\d+/);return m?parseInt(m[0],10):NaN;}
 const byNum=(a,b)=>a-b; const key=(m,e)=>m.join('-')+'|'+e.join('-'); const fmtD=d=>d.toLocaleDateString('de-DE');
 
-/* Indizes/Jahre/Cutoff */
+/* ====== Indizes, Jahre, Freshness ====== */
 function indexStats(){SEEN=new Set(); MAIN=Array(51).fill(0); EURO=Array(13).fill(0); ARCH.forEach(r=>{SEEN.add(key(r.main,r.euro)); r.main.forEach(n=>MAIN[n]++); r.euro.forEach(n=>EURO[n]++);});}
 function buildYears(){YEARS=Array.from(new Set(ARCH.map(r=>r.date.getFullYear()))).sort((a,b)=>a-b);
   const fill=(id)=>{const c=document.getElementById(id); c.innerHTML=''; YEARS.forEach(y=>c.insertAdjacentHTML('beforeend',`<label><input type="checkbox" value="${y}" checked> ${y}</label>`));};
@@ -245,6 +225,9 @@ function buildYears(){YEARS=Array.from(new Set(ARCH.map(r=>r.date.getFullYear())
   document.getElementById('topAll').onchange=e=>{document.querySelectorAll('#topYears input').forEach(cb=>cb.checked=e.target.checked);};
   document.getElementById('goatAll').onchange=e=>{document.querySelectorAll('#goatYears input').forEach(cb=>cb.checked=e.target.checked);};
 }
+function selYears(containerId, allId){if(document.getElementById(allId).checked) return null; return new Set(Array.from(document.querySelectorAll(`#${containerId} input:checked`)).map(x=>parseInt(x.value,10)));}
+function filterYears(data, yearsSet){if(!yearsSet||!yearsSet.size) return data; return data.filter(r=>yearsSet.has(r.date.getFullYear()));}
+
 function lastExpectedDraw(now=new Date()){
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const wd=today.getDay(); const cutoff=new Date(today); cutoff.setHours(DRAW_CUTOFF_H,DRAW_CUTOFF_M,0,0);
@@ -262,12 +245,9 @@ function freshness(){
   b.classList.remove('hidden');
 }
 
-/* Ergebnisse & Export – **sicher** gegen leere Daten */
+/* ====== Render & Export ====== */
 const resultsEl=document.getElementById('results');
-function clearResults(){ resultsEl.innerHTML=''; EXPORT_ROWS=null; EXPORT_TITLE=''; setExportBtns(false); }
-
 function renderBlock(title, fields){
-  if(!Array.isArray(fields) || fields.length===0){ return; }
   const wrap=document.createElement('div'); wrap.className='card';
   const h=document.createElement('h3'); h.textContent=title; wrap.appendChild(h);
   fields.forEach((f,i)=>{const div=document.createElement('div');div.className='card';
@@ -278,46 +258,34 @@ function renderBlock(title, fields){
   resultsEl.prepend(wrap);
 }
 function setExport(title, fields){
-  if(!Array.isArray(fields) || fields.length===0){ EXPORT_ROWS=null; EXPORT_TITLE=''; setExportBtns(false); return; }
-  EXPORT_TITLE=title;
-  EXPORT_ROWS=fields.map((f,i)=>({Feld:i+1,N1:f.main[0],N2:f.main[1],N3:f.main[2],N4:f.main[3],N5:f.main[4],E1:f.euro[0],E2:f.euro[1],Punkte:f.points??'',Details:f.details??''}));
-  setExportBtns(true);
+  const rows=fields.map((f,i)=>({Feld:i+1,N1:f.main[0],N2:f.main[1],N3:f.main[2],N4:f.main[3],N5:f.main[4],E1:f.euro[0],E2:f.euro[1],Punkte:f.points??'',Details:f.details??''}));
+  LAST_EXPORT={title, rows}; setExportBtns(true);
 }
-function setExportBtns(on){ document.getElementById('btnCSV').disabled=!on; document.getElementById('btnXLSX').disabled=!on; }
+function setExportBtns(on){document.getElementById('btnCSV').disabled=!on; document.getElementById('btnXLSX').disabled=!on;}
+document.getElementById('btnCSV').onclick=()=>{ if(!LAST_EXPORT) return; const header=Object.keys(LAST_EXPORT.rows[0]||{}); const csv=[header.join(';')].concat(LAST_EXPORT.rows.map(r=>header.map(k=>{const v=r[k]??'';const s=String(v).replace(/"/g,'""');return /[;"\n]/.test(s)?`"${s}"`:s;}).join(';'))).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=LAST_EXPORT.title+'.csv'; a.click(); };
+document.getElementById('btnXLSX').onclick=()=>{ if(!LAST_EXPORT) return; const ws=XLSX.utils.json_to_sheet(LAST_EXPORT.rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse'); XLSX.writeFile(wb, LAST_EXPORT.title+'.xlsx'); };
 
-document.getElementById('btnCSV').onclick=()=>{
-  if(!EXPORT_ROWS || !EXPORT_ROWS.length) return;
-  const header=Object.keys(EXPORT_ROWS[0]||{}); 
-  const csv=[header.join(';')].concat(EXPORT_ROWS.map(r=>header.map(k=>{const v=r[k]??'';const s=String(v).replace(/"/g,'""');return /[;"\n]/.test(s)?`"${s}"`:s;}).join(';'))).join('\n'); 
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); 
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(EXPORT_TITLE||'Ergebnisse')+'.csv'; a.click();
-};
-document.getElementById('btnXLSX').onclick=()=>{
-  if(!EXPORT_ROWS || !EXPORT_ROWS.length) return;
-  const ws=XLSX.utils.json_to_sheet(EXPORT_ROWS); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse'); XLSX.writeFile(wb,(EXPORT_TITLE||'Ergebnisse')+'.xlsx');
-};
-
-/* Helpers */
+/* ====== Helpers ====== */
 function sampleNoRep(n,min,max){const pool=[];for(let i=min;i<=max;i++)pool.push(i);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}return pool.slice(0,n).sort(byNum);}
 function pickMain(){return sampleNoRep(5,1,50)} function pickEuro(){return sampleNoRep(2,1,12)}
 
-/* Noch nie gesehen */
+/* ====== Noch nie gesehen ====== */
 document.getElementById('btnNever').addEventListener('click', ()=>{
   if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
   const n=Math.max(1,Math.min(20,parseInt(document.getElementById('neverCount').value,10)||6));
   const out=[]; let guard=0;
   while(out.length<n && guard<15000){guard++; const main=pickMain(), euro=pickEuro(); if(!SEEN.has(key(main,euro))) out.push({main,euro});}
-  if(!out.length){ alert('Kein neues Feld gefunden – erneut versuchen.'); return; }
+  if(!out.length) return alert('Kein neues Feld gefunden – erneut versuchen.');
   renderBlock('Noch nie gesehen', out); setExport('NochNieGesehen', out);
 });
 
-/* Häufige Paare */
+/* ====== Häufige Paare ====== */
 document.getElementById('btnPairs').addEventListener('click', ()=>{
   if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
   const k=parseInt(document.getElementById('pairsK').value,10);
   const topN=parseInt(document.getElementById('pairsTopN').value,10);
   const howMany=parseInt(document.getElementById('pairsCount').value,10);
-  const yearsSel= selYears('pairsYears','pairsAll'); const data= filterYears(ARCH, yearsSel);
+  const yearsSel=selYears('pairsYears','pairsAll'); const data=filterYears(ARCH, yearsSel);
   if(!data.length) return alert('Keine Ziehungen im Zeitraum.');
 
   const pairMap=new Map();
@@ -330,18 +298,18 @@ document.getElementById('btnPairs').addEventListener('click', ()=>{
     guard++;
     const p1=topPairs[Math.floor(Math.random()*Math.min(20,topPairs.length))]||'';
     const p2=topPairs[Math.floor(Math.random()*Math.min(20,topPairs.length))]||'';
-    const s=new Set(p1.split('-').map(Number).concat(p2.split('-').map(Number)).filter(Boolean));
+    const s=new Set(p1.split('-').map(Number).concat(p2.split('-').map(Number)).filter(x=>x));
     while(s.size<5) s.add(Math.floor(Math.random()*50)+1);
     const main=Array.from(s).slice(0,5).sort(byNum);
     const euro=pickEuro();
     let cnt=0; for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){if(topSet.has(`${Math.min(main[i],main[j])}-${Math.max(main[i],main[j])}`)) cnt++;}
     if(cnt>=k){ out.push({main,euro,points:cnt}); }
   }
-  if(!out.length){ alert('Nichts gefunden – Top-N erhöhen oder k senken.'); return; }
+  if(!out.length) return alert('Nichts gefunden – Top-N erhöhen oder k senken.');
   renderBlock(`Häufige Paare (≥${k}, Top-N ${topN})`, out); setExport('HaeufigePaare', out);
 });
 
-/* Wahrscheinlichster Schein */
+/* ====== Wahrscheinlichster Schein (Fenster-Scoring) ====== */
 function scoreBasic(main,euro,fm,fe,topPairsSet){
   const sMain=main.reduce((s,v)=>s+(fm[v]||0),0);
   const sEuro=euro.reduce((s,v)=>s+(fe[v]||0),0)*0.5;
@@ -367,7 +335,7 @@ document.getElementById('btnTop').addEventListener('click', ()=>{
       while(s.size<5) s.add(Math.floor(Math.random()*50)+1);
       main=Array.from(s).slice(0,5).sort(byNum);
     }else{
-      const pool=Array.from({length:50},(_,i)=>i+1), w=pool.map(v=>fm[v]+1), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let rr=Math.random()*t,i=0; for(;i<w.length;i++){rr-=w[i]; if(rr<=0)break;} const v=pool[i]; w[i]=0; return v;};
+      const pool=Array.from({length:50},(_,i)=>i+1), w=pool.map(v=>fm[v]+1), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let r=Math.random()*t,i=0; for(;i<w.length;i++){r-=w[i]; if(r<=0)break;} const v=pool[i]; w[i]=0; return v;};
       main=[pick(),pick(),pick(),pick(),pick()].sort(byNum);
     }
     const euro=(()=>{const pool=Array.from({length:12},(_,i)=>i+1), w=pool.map(v=>fe[v]+1), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let r=Math.random()*t,i=0; for(;i<w.length;i++){r-=w[i]; if(r<=0)break;} const v=pool[i]; w[i]=0; return v;}; return [pick(),pick()].sort(byNum);})();
@@ -379,13 +347,14 @@ document.getElementById('btnTop').addEventListener('click', ()=>{
   renderBlock('Wahrscheinlichster Schein', best); setExport('TopSchein', best);
 });
 
-/* Meta */
+/* ====== Meta-Modus ====== */
 document.getElementById('btnMeta').addEventListener('click', ()=>{
   if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
   const tickets=Math.max(1,Math.min(10,parseInt(document.getElementById('metaTickets').value,10)||2));
   const per=Math.max(1,Math.min(20,parseInt(document.getElementById('metaFields').value,10)||10));
   const avoid=document.getElementById('metaAvoidSeen').checked;
 
+  // globale Top-Paare
   const pairMap=new Map();
   ARCH.forEach(d=>{ for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const a=d.main[i],b=d.main[j];const kk=`${Math.min(a,b)}-${Math.max(a,b)}`;pairMap.set(kk,(pairMap.get(kk)||0)+1);} });
   const pairArr=Array.from(pairMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,80).map(([k])=>k);
@@ -396,17 +365,17 @@ document.getElementById('btnMeta').addEventListener('click', ()=>{
     for(let i=0;i<per;i++){
       let f=null, guard=0;
       while(guard++<5000){
-        const r=Math.random();
-        if(r<0.35 && pairArr.length){
+        const r=Math.random(); // Mix aus Strategien
+        if(r<0.35 && pairArr.length){ // Paar-Anchor
           const p1=pairArr[Math.floor(Math.random()*Math.min(20,pairArr.length))], p2=pairArr[Math.floor(Math.random()*Math.min(20,pairArr.length))];
           const s=new Set(p1.split('-').map(Number).concat(p2.split('-').map(Number)));
           while(s.size<5) s.add(Math.floor(Math.random()*50)+1);
           f={main:Array.from(s).slice(0,5).sort(byNum), euro:pickEuro(), details:'Top-Paare'};
-        }else if(r<0.7){
+        }else if(r<0.7){ // Hot-Bias
           const w=[...MAIN], pool=Array.from({length:50},(_,i)=>i+1), pick=()=>{const tot=w.reduce((a,b)=>a+b,1); let rr=Math.random()*tot,idx=0; for(;idx<w.length;idx++){rr-=w[idx]; if(rr<=0)break;} const v=idx; w[idx]=0; return v;};
           const main=[pick(),pick(),pick(),pick(),pick()].filter(v=>v>0).sort(byNum);
           f={main, euro:pickEuro(), details:'Hot-Bias'};
-        }else{
+        }else{ // Muster-Mix
           const m=pickMain(); const even=m.filter(n=>n%2===0).length; const low=m.filter(n=>n<=25).length;
           if(!(even>=2&&even<=3 && low>=2&&low<=3)) continue;
           f={main:m, euro:pickEuro(), details:'Muster'};
@@ -421,7 +390,7 @@ document.getElementById('btnMeta').addEventListener('click', ()=>{
   renderBlock(`Meta — ${tickets} Schein(e) × ${per} Felder`, allFields); setExport('Meta', allFields);
 });
 
-/* GOAT (Ensemble) */
+/* ====== GOAT-Modus (Ensemble-Score) ====== */
 document.getElementById('btnGoat').addEventListener('click', ()=>{
   if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
   const n=Math.max(1,Math.min(20,parseInt(document.getElementById('goatCount').value,10)||10));
@@ -429,20 +398,27 @@ document.getElementById('btnGoat').addEventListener('click', ()=>{
   const yearsSel=selYears('goatYears','goatAll'); const data=filterYears(ARCH, yearsSel);
   if(!data.length) return alert('Keine Ziehungen im Zeitraum.');
 
+  // Recency-Gewichte (letzte Ziehungen zählen stärker)
   const fm=Array(51).fill(0), fe=Array(13).fill(0), gap=Array(51).fill(0);
-  const pairMap=new Map(), triMap=new Map(); let drawIdx=0;
+  const pairMap=new Map(), triMap=new Map();
+  let lastSeen=Array(51).fill(-1), drawIdx=0;
   data.forEach(d=>{
-    drawIdx++; const w=0.5+0.5*drawIdx/data.length;
-    d.main.forEach(x=>{fm[x]+=w;}); d.euro.forEach(x=>{fe[x]+=w*0.7;});
-    for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const a=d.main[i],b=d.main[j];const k=`${Math.min(a,b)}-${Math.max(a,b)}`; pairMap.set(k,(pairMap.get(k)||0)+w);}
-    for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)for(let k=j+1;k<5;k++){const A=d.main[i],B=d.main[j],C=d.main[k]; const key3=[A,B,C].sort(byNum).join('-'); triMap.set(key3,(triMap.get(key3)||0)+w*0.6);}
-    for(let n=1;n<=50;n++){ if(d.main.includes(n)){ gap[n]=0; } else { gap[n]++; } }
+    drawIdx++;
+    const w=0.5+0.5*drawIdx/data.length; // linear (neuere Ziehungen höher)
+    d.main.forEach(x=>{fm[x]+=w;});
+    d.euro.forEach(x=>{fe[x]+=w*0.7;});
+    for(let i=0;i<5;i++) for(let j=i+1;j<5;j++){const a=d.main[i],b=d.main[j]; const k=`${Math.min(a,b)}-${Math.max(a,b)}`; pairMap.set(k,(pairMap.get(k)||0)+w);}
+    for(let i=0;i<5;i++) for(let j=i+1;j<5;j++) for(let k=j+1;k<5;k++){const A=d.main[i],B=d.main[j],C=d.main[k]; const key=[A,B,C].sort(byNum).join('-'); triMap.set(key,(triMap.get(key)||0)+w*0.6);}
+    // Gaps
+    for(let n=1;n<=50;n++){ if(d.main.includes(n)){ gap[n]=0; lastSeen[n]=drawIdx; } else { gap[n]++; } }
   });
   const topPairsSet=new Set(Array.from(pairMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,80).map(([k])=>k));
   const topTripSet=new Set(Array.from(triMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,120).map(([k])=>k));
 
+  // Kandidaten
   const cands=[];
   for(let i=0;i<poolSize;i++){
+    // Start: Mischung aus Heuristiken
     let main;
     const r=Math.random();
     if(r<0.35 && topPairsSet.size){
@@ -456,30 +432,32 @@ document.getElementById('btnGoat').addEventListener('click', ()=>{
       while(s.size<5) s.add(Math.floor(Math.random()*50)+1);
       main=Array.from(s).slice(0,5).sort(byNum);
     }else{
+      // gewichtete Auswahl nach Recency-Frequenz + Gap-Bonus
       const weight=n=>fm[n]+(gap[n]>10?0.3*gap[n]:0);
       const pool=Array.from({length:50},(_,i)=>i+1), w=pool.map(v=>weight(v)+1e-6), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let rr=Math.random()*t,idx=0; for(;idx<w.length;idx++){rr-=w[idx]; if(rr<=0)break;} const v=pool[idx]; w[idx]=0; return v;};
       main=[pick(),pick(),pick(),pick(),pick()].sort(byNum);
     }
     const euro=(()=>{const pool=Array.from({length:12},(_,i)=>i+1), w=pool.map(v=>fe[v]+1e-6), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let r=Math.random()*t,i=0; for(;i<w.length;i++){r-=w[i]; if(r<=0)break;} const v=pool[i]; w[i]=0; return v;}; return [pick(),pick()].sort(byNum);})();
-    const sMain=main.reduce((s,v)=>s+(fm[v]||0),0), sEuro=euro.reduce((s,v)=>s+(fe[v]||0),0)*0.6;
+
+    // Ensemble-Score
+    const sMain=main.reduce((s,v)=>s+(fm[v]||0),0);
+    const sEuro=euro.reduce((s,v)=>s+(fe[v]||0),0)*0.6;
     let sPairs=0; for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){if(topPairsSet.has(`${Math.min(main[i],main[j])}-${Math.max(main[i],main[j])}`)) sPairs+=4;}
-    let sTrip= topTripSet.has(main.slice().sort(byNum).join('-')) ? 6 : 0;
+    let sTrip=0; {const key3=main.slice().sort(byNum).join('-'); if(topTripSet.has(key3)) sTrip+=6;}
     const even=main.filter(n=>n%2===0).length, low=main.filter(n=>n<=25).length;
     const patt=((even>=2&&even<=3)?5:0)+((low>=2&&low<=3)?5:0);
-    const spread=(main[4]-main[0]); const spreadScore=(spread>=20&&spread<=40)?4:0;
+    const spread=(main[4]-main[0]); const spreadScore= (spread>=20 && spread<=40)?4:0;
     const seenPenalty= SEEN.has(key(main,euro)) ? -25 : 0;
-    const score=Math.round(sMain+sEuro+sPairs+sTrip+patt+spreadScore+seenPenalty);
+    const score=Math.round(sMain + sEuro + sPairs + sTrip + patt + spreadScore + seenPenalty);
     cands.push({main,euro,points:score,details:`even:${even}/low:${low}/spread:${spread}`});
   }
   cands.sort((a,b)=>b.points-a.points);
+
+  // Entkopple ähnliche Felder (mind. 2 andere Hauptzahlen)
   const best=[]; outer: for(const c of cands){ if(best.length>=n) break; for(const b of best){ let same=0; for(const x of c.main){ if(b.main.includes(x)) same++; } if(same>=3) continue outer; } best.push(c); }
+
   renderBlock('GOAT-Felder', best); setExport('GOAT', best);
 });
-
-/* Utilities */
-function selYears(containerId, allId){if(document.getElementById(allId).checked) return null; return new Set(Array.from(document.querySelectorAll(`#${containerId} input:checked`)).map(x=>parseInt(x.value,10)));}
-function filterYears(data, yearsSet){if(!yearsSet||!yearsSet.size) return data; return data.filter(r=>yearsSet.has(r.date.getFullYear()));}
-function byNum(a,b){return a-b;}
 </script>
 </body>
 </html>
