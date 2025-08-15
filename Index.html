@@ -1,0 +1,444 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    span.s1 {font: 12.0px 'Apple Color Emoji'}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="de"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width,initial-scale=1" /&gt;</p>
+<p class="p1">&lt;title&gt;Eurojackpot Helper&lt;/title&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--bg:#0f1220; --panel:#171a2a; --muted:#9aa3b2; --text:#e9edf5; --accent:#5f8cff; --ok:#3ddc97;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--border:#23263a;</p>
+<p class="p1">}</p>
+<p class="p1">*{box-sizing:border-box}</p>
+<p class="p1">body{margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text);}</p>
+<p class="p1">.app{max-width:980px; margin:24px auto; padding:0 16px;}</p>
+<p class="p1">header{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px}</p>
+<p class="p1">h1{margin:0 0 6px}</p>
+<p class="p1">.note{color:var(--muted); margin:0 0 8px}</p>
+<p class="p1">section{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin:16px 0}</p>
+<p class="p1">.hidden{display:none}</p>
+<p class="p1">input,select,button{font:inherit}</p>
+<p class="p1">input,select{background:#0f1326; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:10px}</p>
+<p class="p1">button{background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 14px; cursor:pointer}</p>
+<p class="p1">button:disabled{opacity:.6; cursor:not-allowed}</p>
+<p class="p1">button.ghost{background:transparent; border:1px solid var(--border); color:#cfe0ff}</p>
+<p class="p1">.row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}</p>
+<p class="p1">.banner{margin-top:8px; padding:10px; border-radius:8px; background:#2a2131; border:1px solid #5d254f; color:#ffd5e5}</p>
+<p class="p1">.banner.ok{background:#1c2b24; border-color:#2f6b4e; color:#c1f1db}</p>
+<p class="p2"><br></p>
+<p class="p1">.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}</p>
+<p class="p1">.tab{background:#1a1f35; border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:8px; cursor:pointer}</p>
+<p class="p1">.tab.active{background:#24305a; border-color:#2f3b72}</p>
+<p class="p1">.tabpanel{margin-top:6px}</p>
+<p class="p1">.tabpanel.hidden{display:none}</p>
+<p class="p2"><br></p>
+<p class="p1">.card{border:1px solid var(--border); border-radius:10px; padding:10px; margin:10px 0; background:#14182b}</p>
+<p class="p1">.badge{display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#1a1f35; color:#dfe6ff; margin-left:6px}</p>
+<p class="p1">.badge.ok{background:#11261d; color:#bdf7d2; border-color:#1b4b37}</p>
+<p class="p1">.nums{font-variant-numeric: tabular-nums}</p>
+<p class="p2"><br></p>
+<p class="p1">fieldset{border:1px solid #24305a; border-radius:8px; padding:8px}</p>
+<p class="p1">legend{color:#dfe6ff; font-size:0.9em}</p>
+<p class="p1">.year-list label{display:inline-flex; gap:6px; align-items:center; background:#10152a; border:1px solid var(--border); padding:6px 10px; border-radius:999px; margin:4px}</p>
+<p class="p2"><br></p>
+<p class="p1">.detailsBtn{font-size:12px; color:#a7c1ff; cursor:pointer; text-decoration:underline; margin-left:8px}</p>
+<p class="p1">.details{display:none; font-size:13px; color:#d8def7; margin-top:6px; line-height:1.35}</p>
+<p class="p1">.btnrow{display:flex; gap:10px; margin-bottom:10px}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;div class="app"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;<span class="s1">🎯</span> Eurojackpot Helper&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;p class="note"&gt;Lokal im Browser. Lade dein Excel-Archiv (.xls/.xlsx). Cut-off: Di/Fr 22:00 Uhr.&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="file" id="fileInput" accept=".xls,.xlsx" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnReload" class="ghost"&gt;Neu laden&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="freshnessBanner" class="banner hidden"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="archiveInfo" class="note"&gt;Noch kein Archiv geladen.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;section&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Modus wählen&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tabs"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="tab active" data-tab="never"&gt;Noch nie gesehen&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="tab" data-tab="pairs"&gt;Häufige Paare&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="tab" data-tab="top"&gt;Wahrscheinlichster Schein&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tabpanel" id="tab-never"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;Felder:</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input type="number" id="neverCount" min="1" max="20" value="6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnNever"&gt;<span class="s1">✨</span> Generieren&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tabpanel hidden" id="tab-pairs"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;Erzwinge ≥ k Paare:</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="pairsK"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="2" selected&gt;2 Paare&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="3"&gt;3 Paare&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option value="4"&gt;4 Paare&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;Top-N Paare (Quelle):</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;select id="pairsTopN"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;option&gt;25&lt;/option&gt;&lt;option selected&gt;50&lt;/option&gt;&lt;option&gt;100&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;Felder:</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input type="number" id="pairsCount" min="1" max="20" value="6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;fieldset&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;legend&gt;Jahre filtern (optional):&lt;/legend&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;&lt;input type="checkbox" id="pairsAllYears" checked&gt; Alle Jahre&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="pairsYearList" class="year-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/fieldset&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnPairs"&gt;<span class="s1">🧩</span> Generieren&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tabpanel hidden" id="tab-top"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;Anzahl Felder:</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input type="number" id="topCount" min="1" max="20" value="10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;fieldset&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;legend&gt;Jahre filtern (optional):&lt;/legend&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;&lt;input type="checkbox" id="topAllYears" checked&gt; Alle Jahre&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="topYearList" class="year-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/fieldset&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnTop"&gt;<span class="s1">⭐</span> Generieren&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="note"&gt;Hinweis: rechnerische Empfehlung – keine Gewinn-Garantie.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;section&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Ergebnisse&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="btnrow"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnExportCSV" class="ghost" disabled&gt;<span class="s1">⬇️</span> Export (CSV)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnExportXLSX" class="ghost" disabled&gt;<span class="s1">⬇️</span> Export (Excel)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="results"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/section&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const DRAW_CUTOFF_H = 22, DRAW_CUTOFF_M = 0; // Di/Fr 22:00</p>
+<p class="p2"><br></p>
+<p class="p1">let ARCHIVE = []; <span class="Apple-converted-space">         </span></p>
+<p class="p1">let SEEN = new Set();</p>
+<p class="p1">let MAIN_FREQ = Array(51).fill(0);</p>
+<p class="p1">let EURO_FREQ = Array(13).fill(0);</p>
+<p class="p1">let LAST_EXPORT = null;</p>
+<p class="p2"><br></p>
+<p class="p1">document.querySelectorAll('.tab').forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener('click', ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.tab').forEach(b=&gt;b.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.tabpanel').forEach(p=&gt;p.classList.add('hidden'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('tab-'+btn.dataset.tab).classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">document.getElementById('btnReload').addEventListener('click', ()=&gt; location.reload());</p>
+<p class="p2"><br></p>
+<p class="p1">document.getElementById('fileInput').addEventListener('change', async e=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const f = e.target.files[0]; if(!f) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>try{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const data = await f.arrayBuffer();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const wb = XLSX.read(data, { type:'array' });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let rows = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>wb.SheetNames.forEach(sn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const sheet = wb.Sheets[sn];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(!sheet) return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>rows.push(...XLSX.utils.sheet_to_json(sheet, { defval:"" }));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ARCHIVE = normalizeRows(rows).sort((a,b)=&gt;a.date-b.date);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!ARCHIVE.length){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const hdr = Object.keys(rows[0]||{}).join(' | ');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>alert('Keine Ziehungen erkannt. Prüfe Spaltennamen.\nErkannte Header:\n'+hdr);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildIndexes();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>fillYearLists();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>showFreshnessBanner();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderInfo(`Archiv geladen: ${ARCHIVE.length} Ziehungen.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('results').innerHTML='';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>LAST_EXPORT = null; toggleExport(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}catch(err){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>console.error(err);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert('Fehler beim Einlesen: '+(err.message||err));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">function normalizeRows(rows){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const out = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cols = Object.keys(rows[0]||{}).map(c=&gt;String(c).trim());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const low = cols.map(c=&gt;c.toLowerCase());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const findCol = (cands)=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for(const c of cands){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const i = low.indexOf(String(c).toLowerCase());</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(i&gt;=0) return cols[i];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for(const c of cands){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const i = low.findIndex(x=&gt; x.includes(String(c).toLowerCase()));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(i&gt;=0) return cols[i];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const colDate = findCol(['Datum','Date','Ziehungsdatum','Ziehung','Datum der Ziehung']);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let mainColsA = null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const patternsA = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>['Zahl 1','Zahl 2','Zahl 3','Zahl 4','Zahl 5'],</p>
+<p class="p1"><span class="Apple-converted-space">    </span>['Zahl1','Zahl2','Zahl3','Zahl4','Zahl5'],</p>
+<p class="p1"><span class="Apple-converted-space">    </span>['N1','N2','N3','N4','N5']</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(const p of patternsA){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const got = p.map(s=&gt;findCol([s]));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(got.every(Boolean)){ mainColsA = got; break; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const euroA1 = findCol(['Eurozahl 1','Euro 1','E1','Euro1']);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const euroA2 = findCol(['Eurozahl 2','Euro 2','E2','Euro2']);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const packedMain = findCol(['5 aus 50','5aus50','5 aus50','5aus 50']);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const packedEuro = findCol(['EZ','Euro','Eurozahlen']);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const idxMain = packedMain ? cols.indexOf(packedMain) : -1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const idxEuro = packedEuro ? cols.indexOf(packedEuro) : -1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const neighMain = (idxMain&gt;=0 &amp;&amp; idxMain+4&lt;cols.length) ? cols.slice(idxMain, idxMain+5) : null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const neighEuro = (idxEuro&gt;=0 &amp;&amp; idxEuro+1&lt;cols.length) ? cols.slice(idxEuro, idxEuro+2) : null;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(const r of rows){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const dt = parseDateLoose(r[colDate]); if(!dt) continue;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let main=[], euro=[];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(neighMain &amp;&amp; neighEuro){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>main = neighMain.map(c=&gt; firstInt(r[c])).filter(isInt);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>euro = neighEuro.map(c=&gt; firstInt(r[c])).filter(isInt);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}else if(packedMain &amp;&amp; packedEuro){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>main = splitNums(r[packedMain]).slice(0,5);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>euro = splitNums(r[packedEuro]).slice(0,2);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}else if(mainColsA &amp;&amp; euroA1 &amp;&amp; euroA2){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>main = mainColsA.map(c=&gt; firstInt(r[c])).filter(isInt);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>euro = [firstInt(r[euroA1]), firstInt(r[euroA2])].filter(isInt);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(main.length===5 &amp;&amp; euro.length===2</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&amp;&amp; main.every(n=&gt;n&gt;=1&amp;&amp;n&lt;=50)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&amp;&amp; euro.every(n=&gt;n&gt;=1&amp;&amp;n&lt;=12)){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>main.sort((a,b)=&gt;a-b); euro.sort((a,b)=&gt;a-b);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>out.push({date: dt, main, euro});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return out;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function parseDateLoose(v){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const s = String(v??'').trim(); if(!s) return null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(/^\d{2}\.\d{2}\.\d{4}/.test(s)){ const [d,m,y]=s.split('.').map(Number); return new Date(y,m-1,d); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const t = Date.parse(s); return Number.isNaN(t)?null:new Date(t);</p>
+<p class="p1">}</p>
+<p class="p1">function firstInt(val){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const m = String(val??'').match(/\d+/); return m? parseInt(m[0],10) : NaN;</p>
+<p class="p1">}</p>
+<p class="p1">function splitNums(val){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return String(val??'').split(/[^0-9]+/).map(v=&gt;parseInt(v,10)).filter(Number.isInteger);</p>
+<p class="p1">}</p>
+<p class="p1">const isInt = n=&gt; Number.isInteger(n);</p>
+<p class="p2"><br></p>
+<p class="p1">function showFreshnessBanner(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const b = document.getElementById('freshnessBanner');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!ARCHIVE.length){ b.classList.add('hidden'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const latest = ARCHIVE[ARCHIVE.length-1].date;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const now = new Date();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cutoff = new Date(today); cutoff.setHours(DRAW_CUTOFF_H, DRAW_CUTOFF_M, 0, 0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const wd = today.getDay();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const isDrawDay = (wd===2 || wd===5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(isDrawDay &amp;&amp; now &lt; cutoff){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.textContent = `<span class="s1">ℹ️</span> Heute ist Ziehungstag – vor ${DRAW_CUTOFF_H}:00 keine Aktualisierung erwartet. Letzte im Archiv: ${latest.toLocaleDateString('de-DE')}.`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.className = 'banner ok';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}else if(latest &lt; today){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.textContent = `<span class="s1">⚠️</span> Letzte Ziehung im Archiv: ${latest.toLocaleDateString('de-DE')}. Bitte aktuelles Archiv hochladen.`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.className = 'banner';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}else{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.textContent = `<span class="s1">✅</span> Archiv aktuell bis ${latest.toLocaleDateString('de-DE')}.`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.className = 'banner ok';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>b.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a = document.getElementById('archiveInfo');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.textContent = `Zeitraum: ${ARCHIVE[0].date.toLocaleDateString('de-DE')} – ${latest.toLocaleDateString('de-DE')} • ${ARCHIVE.length} Ziehungen`;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function buildIndexes(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>SEEN = new Set(); MAIN_FREQ = Array(51).fill(0); EURO_FREQ = Array(13).fill(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(const rec of ARCHIVE){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const {main,euro} = rec;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>SEEN.add(keyCombo(main,euro));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>main.forEach(n=&gt; MAIN_FREQ[n]++);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>euro.forEach(n=&gt; EURO_FREQ[n]++);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function fillYearLists(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const years = Array.from(new Set(ARCHIVE.map(x=&gt;x.date.getFullYear()))).sort((a,b)=&gt;a-b);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pairs = document.getElementById('pairsYearList'); pairs.innerHTML='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const top = document.getElementById('topYearList'); top.innerHTML='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>years.forEach(y=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>pairs.insertAdjacentHTML('beforeend', `&lt;label&gt;&lt;input type="checkbox" value="${y}" checked&gt; ${y}&lt;/label&gt;`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>top.insertAdjacentHTML('beforeend', `&lt;label&gt;&lt;input type="checkbox" value="${y}" checked&gt; ${y}&lt;/label&gt;`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pairsAllYears').onchange = e=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>pairs.querySelectorAll('input[type=checkbox]').forEach(cb=&gt; cb.checked = e.target.checked);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('topAllYears').onchange = e=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>top.querySelectorAll('input[type=checkbox]').forEach(cb=&gt; cb.checked = e.target.checked);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">const byNumAsc = (a,b)=&gt;a-b;</p>
+<p class="p1">function keyCombo(m,e){ return m.join('-')+'|'+e.join('-'); }</p>
+<p class="p1">function renderInfo(msg){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r = document.getElementById('results');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const div = document.createElement('div'); div.className='card'; div.textContent = msg; r.prepend(div);</p>
+<p class="p1">}</p>
+<p class="p1">function toggleExport(on){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('btnExportCSV').disabled = !on;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('btnExportXLSX').disabled = !on;</p>
+<p class="p1">}</p>
+<p class="p1">/* ======= Noch nie gesehen ======= */</p>
+<p class="p1">document.getElementById('btnNever').addEventListener('click', ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const count = parseInt(document.getElementById('neverCount').value,10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const res = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>while(res.length&lt;count){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const main = pickUniqueNums(5,1,50);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const euro = pickUniqueNums(2,1,12);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!SEEN.has(keyCombo(main,euro))){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>res.push({main,euro});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>showResults(res,'Noch nie gesehen');</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">/* ======= Häufige Paare ======= */</p>
+<p class="p1">document.getElementById('btnPairs').addEventListener('click', ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const k = parseInt(document.getElementById('pairsK').value,10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const topN = parseInt(document.getElementById('pairsTopN').value,10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const count = parseInt(document.getElementById('pairsCount').value,10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const years = getSelectedYears('pairsYearList','pairsAllYears');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const subset = ARCHIVE.filter(r=&gt; years.has(r.date.getFullYear()));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pairCounts = new Map();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(const rec of subset){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const nums = rec.main;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for(let i=0;i&lt;nums.length;i++){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for(let j=i+1;j&lt;nums.length;j++){</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const key = nums[i]+'-'+nums[j];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>pairCounts.set(key, (pairCounts.get(key)||0)+1);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const topPairs = Array.from(pairCounts.entries()).sort((a,b)=&gt;b[1]-a[1]).slice(0,topN).map(e=&gt;e[0].split('-').map(Number));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const res=[];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>while(res.length&lt;count){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const main = pickUniqueNums(5,1,50);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const matchPairs = topPairs.filter(p=&gt; main.includes(p[0]) &amp;&amp; main.includes(p[1]));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(matchPairs.length&gt;=k) res.push({main:main.sort(byNumAsc), euro:pickUniqueNums(2,1,12)});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>showResults(res,`Häufige Paare ≥${k} (Top ${topN})`);</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">/* ======= Wahrscheinlichster Schein ======= */</p>
+<p class="p1">document.getElementById('btnTop').addEventListener('click', ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const count = parseInt(document.getElementById('topCount').value,10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const years = getSelectedYears('topYearList','topAllYears');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const subset = ARCHIVE.filter(r=&gt; years.has(r.date.getFullYear()));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const freqMain = Array(51).fill(0), freqEuro = Array(13).fill(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(const rec of subset){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>rec.main.forEach(n=&gt; freqMain[n]++);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>rec.euro.forEach(n=&gt; freqEuro[n]++);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const scored=[];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=1;i&lt;=50;i++) for(let j=i+1;j&lt;=50;j++) for(let k=j+1;k&lt;=50;k++) for(let l=k+1;l&lt;=50;l++) for(let m=l+1;m&lt;=50;m++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const main=[i,j,k,l,m];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const euro=pickUniqueNums(2,1,12);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const score= main.reduce((s,n)=&gt;s+freqMain[n],0)+ euro.reduce((s,n)=&gt;s+freqEuro[n],0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>scored.push({main,euro,score});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(scored.length&gt;5000) break;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>scored.sort((a,b)=&gt;b.score-a.score);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>showResults(scored.slice(0,count),'Wahrscheinlichster Schein',true);</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">/* ======= Helpers ======= */</p>
+<p class="p1">function pickUniqueNums(n,min,max){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const nums=[]; while(nums.length&lt;n){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const r = Math.floor(Math.random()*(max-min+1))+min;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!nums.includes(r)) nums.push(r);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return nums;</p>
+<p class="p1">}</p>
+<p class="p1">function getSelectedYears(listId,allId){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(document.getElementById(allId).checked) return new Set(ARCHIVE.map(r=&gt;r.date.getFullYear()));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return new Set(Array.from(document.getElementById(listId).querySelectorAll('input:checked')).map(cb=&gt;parseInt(cb.value,10)));</p>
+<p class="p1">}</p>
+<p class="p1">function showResults(arr,title,withScore=false){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r = document.getElementById('results');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>r.innerHTML='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>LAST_EXPORT = arr.map(o=&gt;({main:o.main.join(','), euro:o.euro.join(','), score:o.score||''}));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>toggleExport(true);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>arr.forEach(o=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const card=document.createElement('div'); card.className='card';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const mainSpan=`&lt;span class="nums"&gt;${o.main.join(' ')}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const euroSpan=`&lt;span class="nums"&gt;${o.euro.join(' ')}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>card.innerHTML=`&lt;b&gt;${title}&lt;/b&gt;&lt;br&gt;Main: ${mainSpan} &lt;span class="badge"&gt;Euro: ${euroSpan}&lt;/span&gt;`+(withScore?`&lt;span class="badge ok"&gt;${o.score} Punkte&lt;/span&gt;`:'');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>r.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ======= Export ======= */</p>
+<p class="p1">document.getElementById('btnExportCSV').addEventListener('click', ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!LAST_EXPORT) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rows=[Object.keys(LAST_EXPORT[0])].concat(LAST_EXPORT.map(o=&gt;Object.values(o)));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const csv=rows.map(r=&gt;r.join(';')).join('\n');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const url=URL.createObjectURL(blob);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=document.createElement('a'); a.href=url; a.download='ergebnisse.csv';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.body.appendChild(a); a.click(); document.body.removeChild(a);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>URL.revokeObjectURL(url);</p>
+<p class="p1">});</p>
+<p class="p1">document.getElementById('btnExportXLSX').addEventListener('click', ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!LAST_EXPORT) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ws=XLSX.utils.json_to_sheet(LAST_EXPORT);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const wb=XLSX.utils.book_new();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>XLSX.writeFile(wb,'ergebnisse.xlsx');</p>
+<p class="p1">});</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
