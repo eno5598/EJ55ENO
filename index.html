@@ -6,61 +6,48 @@
 <title>Eurojackpot Helper</title>
 
 <style>
-:root{
-  --bg:#0f1220; --panel:#171a2a; --muted:#9aa3b2; --text:#e9edf5; --accent:#5f8cff; --ok:#3ddc97;
-  --border:#23263a;
-}
-*{box-sizing:border-box}
-body{margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text);}
-.app{max-width:980px; margin:24px auto; padding:0 16px;}
-header{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px}
-h1{margin:0 0 6px}
-.note{color:var(--muted); margin:0 0 8px}
-section{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin:16px 0}
-.hidden{display:none}
+:root{--bg:#0f1220;--panel:#171a2a;--muted:#9aa3b2;--text:#e9edf5;--acc:#5f8cff;--ok:#3ddc97;--bor:#23263a;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.app{max-width:1000px;margin:24px auto;padding:0 16px}
+header,section{background:var(--panel);border:1px solid var(--bor);border-radius:12px;padding:16px;margin:16px 0}
+h1{margin:0 0 6px} .muted{color:var(--muted)} .hidden{display:none}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 input,select,button{font:inherit}
-input,select{background:#0f1326; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:10px}
-button{background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 14px; cursor:pointer}
-button:disabled{opacity:.6; cursor:not-allowed}
-button.ghost{background:transparent; border:1px solid var(--border); color:#cfe0ff}
-.row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-.banner{margin-top:8px; padding:10px; border-radius:8px; background:#2a2131; border:1px solid #5d254f; color:#ffd5e5}
-.banner.ok{background:#1c2b24; border-color:#2f6b4e; color:#c1f1db}
-
-.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
-.tab{background:#1a1f35; border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:8px; cursor:pointer}
-.tab.active{background:#24305a; border-color:#2f3b72}
-.tabpanel{margin-top:6px}
-.tabpanel.hidden{display:none}
-
-.card{border:1px solid var(--border); border-radius:10px; padding:10px; margin:10px 0; background:#14182b}
-.badge{display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#1a1f35; color:#dfe6ff; margin-left:6px}
-.badge.ok{background:#11261d; color:#bdf7d2; border-color:#1b4b37}
-.nums{font-variant-numeric: tabular-nums}
-
-fieldset{border:1px solid #24305a; border-radius:8px; padding:8px}
-legend{color:#dfe6ff; font-size:0.9em}
-.year-list label{display:inline-flex; gap:6px; align-items:center; background:#10152a; border:1px solid var(--border); padding:6px 10px; border-radius:999px; margin:4px}
-
-.detailsBtn{font-size:12px; color:#a7c1ff; cursor:pointer; text-decoration:underline; margin-left:8px}
-.details{display:none; font-size:13px; color:#d8def7; margin-top:6px; line-height:1.35}
-.btnrow{display:flex; gap:10px; margin-bottom:10px}
+input,select{background:#0f1326;color:var(--text);border:1px solid var(--bor);border-radius:8px;padding:10px;min-width:100px}
+button{background:var(--acc);color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer}
+button:disabled{opacity:.6;cursor:not-allowed}
+button.ghost{background:transparent;border:1px solid var(--bor);color:#cfe0ff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tab{background:#1a1f35;border:1px solid var(--bor);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer}
+.tab.active{background:#24305a;border-color:#2f3b72}
+.tabpanel{margin-top:6px} .tabpanel.hidden{display:none}
+.card{border:1px solid var(--bor);border-radius:10px;padding:10px;margin:10px 0;background:#14182b}
+.badge{display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid var(--bor);background:#1a1f35;color:#dfe6ff;margin-left:6px}
+.badge.ok{background:#11261d;color:#bdf7d2;border-color:#1b4b37}
+.nums{font-variant-numeric:tabular-nums}
+fieldset{border:1px solid #24305a;border-radius:8px;padding:8px}
+legend{color:#dfe6ff;font-size:.95em}
+.year-list{display:flex;flex-wrap:wrap;gap:8px}
+.year-list label{display:inline-flex;gap:6px;align-items:center;background:#10152a;border:1px solid var(--bor);padding:6px 10px;border-radius:999px}
+.btnrow{display:flex;gap:10px;margin-bottom:10px}
+.banner{margin-top:8px;padding:10px;border-radius:8px;background:#2a2131;border:1px solid #5d254f;color:#ffd5e5}
+.banner.ok{background:#1c2b24;border-color:#2f6b4e;color:#c1f1db}
 </style>
 
+<!-- Excel-Library (funktioniert auf GitHub Pages) -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="app">
   <header>
     <h1>🎯 Eurojackpot Helper</h1>
-    <p class="note">Lokal im Browser. Lade dein Excel-Archiv (.xls/.xlsx). Cut-off: Di/Fr 22:00 Uhr.</p>
-
+    <p class="muted">Lokal im Browser. Lade dein Excel-Archiv (.xls/.xlsx). Cut-off: Di/Fr 22:00 Uhr.</p>
     <div class="row">
       <input type="file" id="fileInput" accept=".xls,.xlsx" />
       <button id="btnReload" class="ghost">Neu laden</button>
     </div>
-    <div id="freshnessBanner" class="banner hidden"></div>
-    <div id="archiveInfo" class="note">Noch kein Archiv geladen.</div>
+    <div id="freshness" class="banner hidden"></div>
+    <div id="archInfo" class="muted">Noch kein Archiv geladen.</div>
   </header>
 
   <section>
@@ -71,6 +58,7 @@ legend{color:#dfe6ff; font-size:0.9em}
       <button class="tab" data-tab="top">Wahrscheinlichster Schein</button>
     </div>
 
+    <!-- Noch nie gesehen -->
     <div class="tabpanel" id="tab-never">
       <div class="row">
         <label>Felder:
@@ -80,13 +68,14 @@ legend{color:#dfe6ff; font-size:0.9em}
       <button id="btnNever">✨ Generieren</button>
     </div>
 
+    <!-- Häufige Paare -->
     <div class="tabpanel hidden" id="tab-pairs">
       <div class="row">
         <label>Erzwinge ≥ k Paare:
           <select id="pairsK">
-            <option value="2" selected>2 Paare</option>
-            <option value="3">3 Paare</option>
-            <option value="4">4 Paare</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
           </select>
         </label>
         <label>Top-N Paare (Quelle):
@@ -99,13 +88,14 @@ legend{color:#dfe6ff; font-size:0.9em}
         </label>
       </div>
       <fieldset>
-        <legend>Jahre filtern (optional):</legend>
-        <label><input type="checkbox" id="pairsAllYears" checked> Alle Jahre</label>
-        <div id="pairsYearList" class="year-list"></div>
+        <legend>Jahre filtern (optional)</legend>
+        <label><input type="checkbox" id="pairsAll" checked> Alle Jahre</label>
+        <div id="pairsYears" class="year-list"></div>
       </fieldset>
       <button id="btnPairs">🧩 Generieren</button>
     </div>
 
+    <!-- Wahrscheinlichster Schein -->
     <div class="tabpanel hidden" id="tab-top">
       <div class="row">
         <label>Anzahl Felder:
@@ -113,314 +103,266 @@ legend{color:#dfe6ff; font-size:0.9em}
         </label>
       </div>
       <fieldset>
-        <legend>Jahre filtern (optional):</legend>
-        <label><input type="checkbox" id="topAllYears" checked> Alle Jahre</label>
-        <div id="topYearList" class="year-list"></div>
+        <legend>Jahre filtern (optional)</legend>
+        <label><input type="checkbox" id="topAll" checked> Alle Jahre</label>
+        <div id="topYears" class="year-list"></div>
       </fieldset>
       <button id="btnTop">⭐ Generieren</button>
-      <p class="note">Hinweis: rechnerische Empfehlung – keine Gewinn-Garantie.</p>
+      <p class="muted" style="margin-top:6px">Hinweis: rechnerische Empfehlung – keine Gewinn-Garantie.</p>
     </div>
   </section>
 
   <section>
     <h2>Ergebnisse</h2>
     <div class="btnrow">
-      <button id="btnExportCSV" class="ghost" disabled>⬇️ Export (CSV)</button>
-      <button id="btnExportXLSX" class="ghost" disabled>⬇️ Export (Excel)</button>
+      <button id="btnCSV" class="ghost" disabled>⬇️ Export (CSV)</button>
+      <button id="btnXLSX" class="ghost" disabled>⬇️ Export (Excel)</button>
     </div>
     <div id="results"></div>
   </section>
 </div>
+
 <script>
-const DRAW_CUTOFF_H = 22, DRAW_CUTOFF_M = 0; // Di/Fr 22:00
+/* ====== Global ====== */
+const DRAW_CUTOFF_H=22,DRAW_CUTOFF_M=0;
+let ARCH=[], SEEN=new Set(), MAIN=Array(51).fill(0), EURO=Array(13).fill(0);
+let YEARS=[], LAST_EXPORT=null;
 
-let ARCHIVE = [];          
-let SEEN = new Set();
-let MAIN_FREQ = Array(51).fill(0);
-let EURO_FREQ = Array(13).fill(0);
-let LAST_EXPORT = null;
-
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
+/* ====== Tabs ====== */
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
     document.querySelectorAll('.tabpanel').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('tab-'+btn.dataset.tab).classList.remove('hidden');
+    document.getElementById('tab-'+b.dataset.tab).classList.remove('hidden');
   });
 });
 
-document.getElementById('btnReload').addEventListener('click', ()=> location.reload());
-
+/* ====== Upload ====== */
+document.getElementById('btnReload').onclick=()=>location.reload();
 document.getElementById('fileInput').addEventListener('change', async e=>{
-  const f = e.target.files[0]; if(!f) return;
+  const f=e.target.files[0]; if(!f) return;
   try{
-    const data = await f.arrayBuffer();
-    const wb = XLSX.read(data, { type:'array' });
-    let rows = [];
+    const data=await f.arrayBuffer();
+    const wb=XLSX.read(data,{type:'array'});
+    const rows=[];
     wb.SheetNames.forEach(sn=>{
-      const sheet = wb.Sheets[sn];
-      if(!sheet) return;
-      rows.push(...XLSX.utils.sheet_to_json(sheet, { defval:"" }));
+      rows.push(...XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:""}));
     });
-    ARCHIVE = normalizeRows(rows).sort((a,b)=>a.date-b.date);
-    if(!ARCHIVE.length){
-      const hdr = Object.keys(rows[0]||{}).join(' | ');
-      alert('Keine Ziehungen erkannt. Prüfe Spaltennamen.\nErkannte Header:\n'+hdr);
-      return;
-    }
-    buildIndexes();
-    fillYearLists();
-    showFreshnessBanner();
-    renderInfo(`Archiv geladen: ${ARCHIVE.length} Ziehungen.`);
-    document.getElementById('results').innerHTML='';
-    LAST_EXPORT = null; toggleExport(false);
-  }catch(err){
-    console.error(err);
-    alert('Fehler beim Einlesen: '+(err.message||err));
-  }
+    ARCH = normalize(rows).sort((a,b)=>a.date-b.date);
+    if(!ARCH.length){ alert('Keine Ziehungen erkannt. Prüfe, ob die Spalten "Datum", "5 aus 50", "EZ" vorhanden sind.'); return; }
+    indexStats();
+    buildYears();
+    freshness();
+    document.getElementById('archInfo').textContent=`Zeitraum: ${fmtD(ARCH[0].date)} – ${fmtD(ARCH[ARCH.length-1].date)} • ${ARCH.length} Ziehungen`;
+    document.getElementById('results').innerHTML=''; LAST_EXPORT=null; setExport(false);
+  }catch(err){ console.error(err); alert('Fehler beim Einlesen: '+(err.message||err)); }
 });
 
-function normalizeRows(rows){
-  const out = [];
-  const cols = Object.keys(rows[0]||{}).map(c=>String(c).trim());
-  const low = cols.map(c=>c.toLowerCase());
-  const findCol = (cands)=>{
-    for(const c of cands){
-      const i = low.indexOf(String(c).toLowerCase());
-      if(i>=0) return cols[i];
-    }
-    for(const c of cands){
-      const i = low.findIndex(x=> x.includes(String(c).toLowerCase()));
-      if(i>=0) return cols[i];
-    }
+/* ====== Normalisierung (passt zu deinem Screenshot) ====== */
+function normalize(rows){
+  const out=[];
+  const cols=Object.keys(rows[0]||{}).map(c=>String(c).trim());
+  const low=cols.map(c=>c.toLowerCase());
+  const col=(names)=>{ // exakte oder "enthält"-Suche
+    for(const n of names){const i=low.indexOf(n.toLowerCase()); if(i>=0) return cols[i];}
+    for(const n of names){const j=low.findIndex(x=>x.includes(n.toLowerCase())); if(j>=0) return cols[j];}
     return null;
   };
-  const colDate = findCol(['Datum','Date','Ziehungsdatum','Ziehung','Datum der Ziehung']);
-  let mainColsA = null;
-  const patternsA = [
-    ['Zahl 1','Zahl 2','Zahl 3','Zahl 4','Zahl 5'],
-    ['Zahl1','Zahl2','Zahl3','Zahl4','Zahl5'],
-    ['N1','N2','N3','N4','N5']
-  ];
-  for(const p of patternsA){
-    const got = p.map(s=>findCol([s]));
-    if(got.every(Boolean)){ mainColsA = got; break; }
-  }
-  const euroA1 = findCol(['Eurozahl 1','Euro 1','E1','Euro1']);
-  const euroA2 = findCol(['Eurozahl 2','Euro 2','E2','Euro2']);
-  const packedMain = findCol(['5 aus 50','5aus50','5 aus50','5aus 50']);
-  const packedEuro = findCol(['EZ','Euro','Eurozahlen']);
-  const idxMain = packedMain ? cols.indexOf(packedMain) : -1;
-  const idxEuro = packedEuro ? cols.indexOf(packedEuro) : -1;
-  const neighMain = (idxMain>=0 && idxMain+4<cols.length) ? cols.slice(idxMain, idxMain+5) : null;
-  const neighEuro = (idxEuro>=0 && idxEuro+1<cols.length) ? cols.slice(idxEuro, idxEuro+2) : null;
+  const cDate=col(['datum','date','ziehung','ziehungsdatum']);
+  const cPackedMain=col(['5 aus 50','5aus50','5 aus50']);
+  const cPackedEZ=col(['ez','euro','eurozahlen']);
 
-  for(const r of rows){
-    const dt = parseDateLoose(r[colDate]); if(!dt) continue;
+  // Fallback: Bei Excel-Export stehen die fünf Hauptzahlen/euro in Nebenspalten (__EMPTY,...)
+  const idxMain=cols.indexOf(cPackedMain||'');
+  const idxEZ=cols.indexOf(cPackedEZ||'');
+  const neighMain=(idxMain>=0 && idxMain+4<cols.length)? cols.slice(idxMain,idxMain+5):null;
+  const neighEZ=(idxEZ>=0 && idxEZ+1<cols.length)? cols.slice(idxEZ,idxEZ+2):null;
+
+  rows.forEach(r=>{
+    const dt=parseDateLoose(r[cDate]); if(!dt) return;
     let main=[], euro=[];
-    if(neighMain && neighEuro){
-      main = neighMain.map(c=> firstInt(r[c])).filter(isInt);
-      euro = neighEuro.map(c=> firstInt(r[c])).filter(isInt);
-    }else if(packedMain && packedEuro){
-      main = splitNums(r[packedMain]).slice(0,5);
-      euro = splitNums(r[packedEuro]).slice(0,2);
-    }else if(mainColsA && euroA1 && euroA2){
-      main = mainColsA.map(c=> firstInt(r[c])).filter(isInt);
-      euro = [firstInt(r[euroA1]), firstInt(r[euroA2])].filter(isInt);
+    if(neighMain && neighEZ){
+      main=neighMain.map(c=>firstInt(r[c])).filter(Number.isInteger);
+      euro=neighEZ.map(c=>firstInt(r[c])).filter(Number.isInteger);
+    }else{
+      const m = splitNums(r[cPackedMain]).slice(0,5);
+      const e = splitNums(r[cPackedEZ]).slice(0,2);
+      main=m; euro=e;
     }
-    if(main.length===5 && euro.length===2
-      && main.every(n=>n>=1&&n<=50)
-      && euro.every(n=>n>=1&&n<=12)){
+    if(main.length===5 && euro.length===2 && main.every(n=>n>=1&&n<=50) && euro.every(n=>n>=1&&n<=12)){
       main.sort((a,b)=>a-b); euro.sort((a,b)=>a-b);
-      out.push({date: dt, main, euro});
+      out.push({date:dt, main, euro});
     }
-  }
+  });
   return out;
 }
-
 function parseDateLoose(v){
-  const s = String(v??'').trim(); if(!s) return null;
+  const s=String(v??'').trim(); if(!s) return null;
   if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s);
-  if(/^\d{2}\.\d{2}\.\d{4}/.test(s)){ const [d,m,y]=s.split('.').map(Number); return new Date(y,m-1,d); }
-  const t = Date.parse(s); return Number.isNaN(t)?null:new Date(t);
+  if(/^\d{2}\.\d{2}\.\d{4}/.test(s)){const [d,m,y]=s.split('.').map(Number);return new Date(y,m-1,d);}
+  const t=Date.parse(s); return Number.isNaN(t)?null:new Date(t);
 }
-function firstInt(val){
-  const m = String(val??'').match(/\d+/); return m? parseInt(m[0],10) : NaN;
-}
-function splitNums(val){
-  return String(val??'').split(/[^0-9]+/).map(v=>parseInt(v,10)).filter(Number.isInteger);
-}
-const isInt = n=> Number.isInteger(n);
+function splitNums(cell){return String(cell??'').replace(/[^\d]+/g,' ').trim().split(/\s+/).map(x=>parseInt(x,10)).filter(Number.isInteger);}
+function firstInt(v){const m=String(v??'').match(/\d+/); return m?parseInt(m[0],10):NaN;}
+const byNum=(a,b)=>a-b; const key=(m,e)=>m.join('-')+'|'+e.join('-'); const fmtD=d=>d.toLocaleDateString('de-DE');
 
-function showFreshnessBanner(){
-  const b = document.getElementById('freshnessBanner');
-  if(!ARCHIVE.length){ b.classList.add('hidden'); return; }
-  const latest = ARCHIVE[ARCHIVE.length-1].date;
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const cutoff = new Date(today); cutoff.setHours(DRAW_CUTOFF_H, DRAW_CUTOFF_M, 0, 0);
-  const wd = today.getDay();
-  const isDrawDay = (wd===2 || wd===5);
-  if(isDrawDay && now < cutoff){
-    b.textContent = `ℹ️ Heute ist Ziehungstag – vor ${DRAW_CUTOFF_H}:00 keine Aktualisierung erwartet. Letzte im Archiv: ${latest.toLocaleDateString('de-DE')}.`;
-    b.className = 'banner ok';
-  }else if(latest < today){
-    b.textContent = `⚠️ Letzte Ziehung im Archiv: ${latest.toLocaleDateString('de-DE')}. Bitte aktuelles Archiv hochladen.`;
-    b.className = 'banner';
-  }else{
-    b.textContent = `✅ Archiv aktuell bis ${latest.toLocaleDateString('de-DE')}.`;
-    b.className = 'banner ok';
-  }
-  b.classList.remove('hidden');
-  const a = document.getElementById('archiveInfo');
-  a.textContent = `Zeitraum: ${ARCHIVE[0].date.toLocaleDateString('de-DE')} – ${latest.toLocaleDateString('de-DE')} • ${ARCHIVE.length} Ziehungen`;
+/* ====== Indizes & Jahre ====== */
+function indexStats(){
+  SEEN=new Set(); MAIN=Array(51).fill(0); EURO=Array(13).fill(0);
+  ARCH.forEach(r=>{ SEEN.add(key(r.main,r.euro)); r.main.forEach(n=>MAIN[n]++); r.euro.forEach(n=>EURO[n]++); });
 }
-
-function buildIndexes(){
-  SEEN = new Set(); MAIN_FREQ = Array(51).fill(0); EURO_FREQ = Array(13).fill(0);
-  for(const rec of ARCHIVE){
-    const {main,euro} = rec;
-    SEEN.add(keyCombo(main,euro));
-    main.forEach(n=> MAIN_FREQ[n]++);
-    euro.forEach(n=> EURO_FREQ[n]++);
-  }
-}
-
-function fillYearLists(){
-  const years = Array.from(new Set(ARCHIVE.map(x=>x.date.getFullYear()))).sort((a,b)=>a-b);
-  const pairs = document.getElementById('pairsYearList'); pairs.innerHTML='';
-  const top = document.getElementById('topYearList'); top.innerHTML='';
-  years.forEach(y=>{
+function buildYears(){
+  YEARS = Array.from(new Set(ARCH.map(r=>r.date.getFullYear()))).sort((a,b)=>a-b);
+  const pairs=document.getElementById('pairsYears'); const top=document.getElementById('topYears');
+  pairs.innerHTML=''; top.innerHTML='';
+  YEARS.forEach(y=>{
     pairs.insertAdjacentHTML('beforeend', `<label><input type="checkbox" value="${y}" checked> ${y}</label>`);
     top.insertAdjacentHTML('beforeend', `<label><input type="checkbox" value="${y}" checked> ${y}</label>`);
   });
-  document.getElementById('pairsAllYears').onchange = e=>{
-    pairs.querySelectorAll('input[type=checkbox]').forEach(cb=> cb.checked = e.target.checked);
-  };
-  document.getElementById('topAllYears').onchange = e=>{
-    top.querySelectorAll('input[type=checkbox]').forEach(cb=> cb.checked = e.target.checked);
-  };
+  document.getElementById('pairsAll').onchange=e=>{pairs.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=e.target.checked);};
+  document.getElementById('topAll').onchange=e=>{top.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=e.target.checked);};
 }
-
-const byNumAsc = (a,b)=>a-b;
-function keyCombo(m,e){ return m.join('-')+'|'+e.join('-'); }
-function renderInfo(msg){
-  const r = document.getElementById('results');
-  const div = document.createElement('div'); div.className='card'; div.textContent = msg; r.prepend(div);
-}
-function toggleExport(on){
-  document.getElementById('btnExportCSV').disabled = !on;
-  document.getElementById('btnExportXLSX').disabled = !on;
-}
-/* ======= Noch nie gesehen ======= */
-document.getElementById('btnNever').addEventListener('click', ()=>{
-  if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');
-  const count = parseInt(document.getElementById('neverCount').value,10);
-  const res = [];
-  while(res.length<count){
-    const main = pickUniqueNums(5,1,50);
-    const euro = pickUniqueNums(2,1,12);
-    if(!SEEN.has(keyCombo(main,euro))){
-      res.push({main,euro});
-    }
-  }
-  showResults(res,'Noch nie gesehen');
-});
-
-/* ======= Häufige Paare ======= */
-document.getElementById('btnPairs').addEventListener('click', ()=>{
-  if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');
-  const k = parseInt(document.getElementById('pairsK').value,10);
-  const topN = parseInt(document.getElementById('pairsTopN').value,10);
-  const count = parseInt(document.getElementById('pairsCount').value,10);
-  const years = getSelectedYears('pairsYearList','pairsAllYears');
-  const subset = ARCHIVE.filter(r=> years.has(r.date.getFullYear()));
-  const pairCounts = new Map();
-  for(const rec of subset){
-    const nums = rec.main;
-    for(let i=0;i<nums.length;i++){
-      for(let j=i+1;j<nums.length;j++){
-        const key = nums[i]+'-'+nums[j];
-        pairCounts.set(key, (pairCounts.get(key)||0)+1);
-      }
-    }
-  }
-  const topPairs = Array.from(pairCounts.entries()).sort((a,b)=>b[1]-a[1]).slice(0,topN).map(e=>e[0].split('-').map(Number));
-  const res=[];
-  while(res.length<count){
-    const main = pickUniqueNums(5,1,50);
-    const matchPairs = topPairs.filter(p=> main.includes(p[0]) && main.includes(p[1]));
-    if(matchPairs.length>=k) res.push({main:main.sort(byNumAsc), euro:pickUniqueNums(2,1,12)});
-  }
-  showResults(res,`Häufige Paare ≥${k} (Top ${topN})`);
-});
-
-/* ======= Wahrscheinlichster Schein ======= */
-document.getElementById('btnTop').addEventListener('click', ()=>{
-  if(!ARCHIVE.length) return alert('Bitte zuerst Archiv laden.');
-  const count = parseInt(document.getElementById('topCount').value,10);
-  const years = getSelectedYears('topYearList','topAllYears');
-  const subset = ARCHIVE.filter(r=> years.has(r.date.getFullYear()));
-  const freqMain = Array(51).fill(0), freqEuro = Array(13).fill(0);
-  for(const rec of subset){
-    rec.main.forEach(n=> freqMain[n]++);
-    rec.euro.forEach(n=> freqEuro[n]++);
-  }
-  const scored=[];
-  for(let i=1;i<=50;i++) for(let j=i+1;j<=50;j++) for(let k=j+1;k<=50;k++) for(let l=k+1;l<=50;l++) for(let m=l+1;m<=50;m++){
-    const main=[i,j,k,l,m];
-    const euro=pickUniqueNums(2,1,12);
-    const score= main.reduce((s,n)=>s+freqMain[n],0)+ euro.reduce((s,n)=>s+freqEuro[n],0);
-    scored.push({main,euro,score});
-    if(scored.length>5000) break;
-  }
-  scored.sort((a,b)=>b.score-a.score);
-  showResults(scored.slice(0,count),'Wahrscheinlichster Schein',true);
-});
-
-/* ======= Helpers ======= */
-function pickUniqueNums(n,min,max){
-  const nums=[]; while(nums.length<n){
-    const r = Math.floor(Math.random()*(max-min+1))+min;
-    if(!nums.includes(r)) nums.push(r);
-  }
-  return nums;
-}
-function getSelectedYears(listId,allId){
-  if(document.getElementById(allId).checked) return new Set(ARCHIVE.map(r=>r.date.getFullYear()));
+function selYears(listId, allId){
+  if(document.getElementById(allId).checked) return null;
   return new Set(Array.from(document.getElementById(listId).querySelectorAll('input:checked')).map(cb=>parseInt(cb.value,10)));
 }
-function showResults(arr,title,withScore=false){
-  const r = document.getElementById('results');
-  r.innerHTML='';
-  LAST_EXPORT = arr.map(o=>({main:o.main.join(','), euro:o.euro.join(','), score:o.score||''}));
-  toggleExport(true);
-  arr.forEach(o=>{
-    const card=document.createElement('div'); card.className='card';
-    const mainSpan=`<span class="nums">${o.main.join(' ')}</span>`;
-    const euroSpan=`<span class="nums">${o.euro.join(' ')}</span>`;
-    card.innerHTML=`<b>${title}</b><br>Main: ${mainSpan} <span class="badge">Euro: ${euroSpan}</span>`+(withScore?`<span class="badge ok">${o.score} Punkte</span>`:'');
-    r.appendChild(card);
-  });
+function filterYears(data, yearsSet){ if(!yearsSet||!yearsSet.size) return data; return data.filter(r=>yearsSet.has(r.date.getFullYear())); }
+
+/* ====== Freshness (Cut-off) ====== */
+function lastExpectedDraw(now=new Date()){
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const wd=today.getDay(); const cutoff=new Date(today); cutoff.setHours(DRAW_CUTOFF_H,DRAW_CUTOFF_M,0,0);
+  const backTo=t=>{const n=(wd-t+7)%7;const d=new Date(today);d.setDate(today.getDate()-n);return d;};
+  const tue=backTo(2), fri=backTo(5); let latest=(tue>fri)?tue:fri;
+  if((wd===2||wd===5) && now<cutoff){ const prev=new Date(today); prev.setDate(prev.getDate()-(wd===2?4:3)); latest=prev; }
+  return latest;
+}
+function freshness(){
+  const b=document.getElementById('freshness'); if(!ARCH.length){b.classList.add('hidden');return;}
+  const latest=ARCH[ARCH.length-1].date; const exp=lastExpectedDraw(new Date());
+  if(new Date(latest.getFullYear(),latest.getMonth(),latest.getDate())<exp){
+    b.textContent=`⚠️ Bitte aktuelles Archiv hochladen — es fehlen Ziehungen seit ${fmtD(latest)}. Erwartet bis: ${fmtD(exp)}.`; b.className='banner';
+  }else{ b.textContent=`✅ Archiv ist aktuell bis ${fmtD(latest)}.`; b.className='banner ok'; }
+  b.classList.remove('hidden');
 }
 
-/* ======= Export ======= */
-document.getElementById('btnExportCSV').addEventListener('click', ()=>{
-  if(!LAST_EXPORT) return;
-  const rows=[Object.keys(LAST_EXPORT[0])].concat(LAST_EXPORT.map(o=>Object.values(o)));
-  const csv=rows.map(r=>r.join(';')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='ergebnisse.csv';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+/* ====== Render & Export ====== */
+const resultsEl=document.getElementById('results');
+function renderBlock(title, fields){
+  const wrap=document.createElement('div'); wrap.className='card';
+  const h=document.createElement('h3'); h.textContent=title; wrap.appendChild(h);
+  fields.forEach((f,i)=>{
+    const div=document.createElement('div'); div.className='card';
+    div.innerHTML=`<b>Feld ${i+1}:</b> <span class="nums">${f.main.join(', ')}</span> <span class="badge">Euro: ${f.euro.join(', ')}</span>`+(f.points!=null?` <span class="badge ok">${f.points} Punkte</span>`:'');
+    wrap.appendChild(div);
+  });
+  resultsEl.prepend(wrap);
+}
+function setExport(title, fields){
+  const rows=fields.map((f,i)=>({Feld:i+1,N1:f.main[0],N2:f.main[1],N3:f.main[2],N4:f.main[3],N5:f.main[4],E1:f.euro[0],E2:f.euro[1],Punkte:f.points??''}));
+  LAST_EXPORT={title, rows}; setExport(true);
+}
+function setExport(on){ document.getElementById('btnCSV').disabled=!on; document.getElementById('btnXLSX').disabled=!on; }
+document.getElementById('btnCSV').onclick=()=>{ if(!LAST_EXPORT) return; const header=Object.keys(LAST_EXPORT.rows[0]||{}); const csv=[header.join(';')].concat(LAST_EXPORT.rows.map(r=>header.map(k=>{const v=r[k]??'';const s=String(v).replace(/"/g,'""');return /[;"\n]/.test(s)?`"${s}"`:s;}).join(';'))).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=LAST_EXPORT.title+'.csv'; a.click(); };
+document.getElementById('btnXLSX').onclick=()=>{ if(!LAST_EXPORT) return; const ws=XLSX.utils.json_to_sheet(LAST_EXPORT.rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse'); XLSX.writeFile(wb, LAST_EXPORT.title+'.xlsx'); };
+
+/* ====== Helpers ====== */
+function sampleNoRep(n,min,max){
+  const pool=[]; for(let i=min;i<=max;i++) pool.push(i);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]];}
+  return pool.slice(0,n).sort(byNum);
+}
+function pickMain(){return sampleNoRep(5,1,50)} function pickEuro(){return sampleNoRep(2,1,12)}
+
+/* ====== Modus: Noch nie gesehen ====== */
+document.getElementById('btnNever').addEventListener('click', ()=>{
+  if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
+  const n=Math.max(1,Math.min(20,parseInt(document.getElementById('neverCount').value,10)||6));
+  const out=[]; let guard=0;
+  while(out.length<n && guard<15000){
+    guard++;
+    const main=pickMain(), euro=pickEuro();
+    if(!SEEN.has(key(main,euro))) out.push({main,euro});
+  }
+  if(!out.length) return alert('Kein neues Feld gefunden – erneut versuchen.');
+  renderBlock('Noch nie gesehen', out); setExport('NochNieGesehen', out);
 });
-document.getElementById('btnExportXLSX').addEventListener('click', ()=>{
-  if(!LAST_EXPORT) return;
-  const ws=XLSX.utils.json_to_sheet(LAST_EXPORT);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Ergebnisse');
-  XLSX.writeFile(wb,'ergebnisse.xlsx');
+
+/* ====== Modus: Häufige Paare ====== */
+document.getElementById('btnPairs').addEventListener('click', ()=>{
+  if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
+  const k=parseInt(document.getElementById('pairsK').value,10);
+  const topN=parseInt(document.getElementById('pairsTopN').value,10);
+  const howMany=parseInt(document.getElementById('pairsCount').value,10);
+  const yearsSel=selYears('pairsYears','pairsAll'); const data=filterYears(ARCH, yearsSel);
+  if(!data.length) return alert('Keine Ziehungen im gewählten Zeitraum.');
+
+  // Paare zählen im gefilterten Fenster
+  const pairMap=new Map();
+  data.forEach(d=>{ for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const a=d.main[i],b=d.main[j];const kk=`${Math.min(a,b)}-${Math.max(a,b)}`;pairMap.set(kk,(pairMap.get(kk)||0)+1);} });
+  const topPairs=Array.from(pairMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,topN).map(([k])=>k);
+  const topSet=new Set(topPairs);
+
+  const out=[]; let guard=0;
+  while(out.length<howMany && guard<howMany*8000){
+    guard++;
+    // starte mit 2 zufälligen Top-Paaren
+    const p1=topPairs[Math.floor(Math.random()*Math.min(20,topPairs.length))]||'';
+    const p2=topPairs[Math.floor(Math.random()*Math.min(20,topPairs.length))]||'';
+    const s=new Set(p1.split('-').map(Number).concat(p2.split('-').map(Number)).filter(x=>x));
+    while(s.size<5) s.add(Math.floor(Math.random()*50)+1);
+    const main=Array.from(s).slice(0,5).sort(byNum);
+    const euro=pickEuro();
+    let cnt=0; for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){if(topSet.has(`${Math.min(main[i],main[j])}-${Math.max(main[i],main[j])}`)) cnt++;}
+    if(cnt>=k){ out.push({main,euro,points:cnt}); }
+  }
+  if(!out.length) return alert('Keine Felder gefunden – Top-N erhöhen oder k senken.');
+  renderBlock(`Häufige Paare (≥${k}, Top-N ${topN})`, out); setExport('HaeufigePaare', out);
+});
+
+/* ====== Modus: Wahrscheinlichster Schein (Scoring) ====== */
+function scoreField(main,euro,fm,fe,topPairsSet){
+  const sMain=main.reduce((s,v)=>s+(fm[v]||0),0);
+  const sEuro=euro.reduce((s,v)=>s+(fe[v]||0),0)*0.5;
+  let sPairs=0; for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){if(topPairsSet.has(`${Math.min(main[i],main[j])}-${Math.max(main[i],main[j])}`)) sPairs+=5;}
+  // leichtes Muster-Bonus (2–3 gerade, 2–3 ≤25)
+  const even=main.filter(n=>n%2===0).length, low=main.filter(n=>n<=25).length;
+  const patt=((even>=2&&even<=3)?4:0)+((low>=2&&low<=3)?4:0);
+  return Math.round(sMain + sEuro + sPairs + patt);
+}
+document.getElementById('btnTop').addEventListener('click', ()=>{
+  if(!ARCH.length) return alert('Bitte erst Archiv hochladen.');
+  const n=Math.max(1,Math.min(20,parseInt(document.getElementById('topCount').value,10)||10));
+  const yearsSel=selYears('topYears','topAll'); const data=filterYears(ARCH, yearsSel);
+  if(!data.length) return alert('Keine Ziehungen im gewählten Zeitraum.');
+
+  // Fenster-Statistik
+  const fm=Array(51).fill(0), fe=Array(13).fill(0), pairMap=new Map();
+  data.forEach(d=>{ d.main.forEach(x=>fm[x]++); d.euro.forEach(x=>fe[x]++); for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const a=d.main[i],b=d.main[j];const kk=`${Math.min(a,b)}-${Math.max(a,b)}`;pairMap.set(kk,(pairMap.get(kk)||0)+1);} });
+  const topPairsSet=new Set(Array.from(pairMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,50).map(([k])=>k));
+
+  // Kandidaten generieren (Mischung aus Hot-Bias & Paar-Ankern)
+  const cands=[];
+  for(let i=0;i<5000;i++){
+    let main;
+    if(Math.random()<0.4 && topPairsSet.size){
+      const arr=Array.from(topPairsSet), p1=arr[Math.floor(Math.random()*Math.min(30,arr.length))], p2=arr[Math.floor(Math.random()*Math.min(30,arr.length))];
+      const s=new Set(p1.split('-').map(Number).concat(p2.split('-').map(Number)));
+      while(s.size<5) s.add(Math.floor(Math.random()*50)+1);
+      main=Array.from(s).slice(0,5).sort(byNum);
+    }else{
+      // Gewichtete Auswahl nach Häufigkeit
+      const pool=Array.from({length:50},(_,i)=>i+1), w=pool.map(v=>fm[v]+1), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let r=Math.random()*t,i=0; for(;i<w.length;i++){r-=w[i]; if(r<=0)break;} const v=pool[i]; w[i]=0; return v;};
+      main=[pick(),pick(),pick(),pick(),pick()].sort(byNum);
+    }
+    const euro=(()=>{const pool=Array.from({length:12},(_,i)=>i+1), w=pool.map(v=>fe[v]+1), pick=()=>{const t=w.reduce((a,b)=>a+b,0); let r=Math.random()*t,i=0; for(;i<w.length;i++){r-=w[i]; if(r<=0)break;} const v=pool[i]; w[i]=0; return v;}; const a=pick(), b=pick(); return [a,b].sort(byNum);})();
+    const points=scoreField(main,euro,fm,fe,topPairsSet);
+    cands.push({main,euro,points});
+  }
+  cands.sort((a,b)=>b.points-a.points);
+  const best=cands.slice(0,n);
+  renderBlock('Wahrscheinlichster Schein', best); setExport('TopSchein', best);
 });
 </script>
 </body>
